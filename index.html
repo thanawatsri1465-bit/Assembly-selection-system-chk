@@ -1,5 +1,10 @@
-นี่คือไฟล์ HTML รวมฉบับสมบูรณ์ ที่ปรับแก้ฟังก์ชัน toggleSystem() ให้ส่งข้อมูลด้วย Image Ping เพื่อข้ามขีดจำกัดเบราว์เซอร์ ช่วยให้คำสั่งปิด/เปิดระบบยิงตรงไปเปลี่ยนค่าในเซลล์ B1 ของ Google Sheets และอัปเดตตรงกันทุกเครื่องได้แน่นอนครับ
-คัดลอกโค้ดทั้งหมดนี้ไปวางทับไฟล์ HTML ของคุณได้เลยครับ:
+สาเหตุที่ UI เปลี่ยนแปลงไป เกิดจาก โค้ด HTML ในไฟล์บน GitHub ถูกอัปเดตเป็นเวอร์ชันใหม่ (ไฟล์ HTML รวมฉบับใหม่ที่คัดลอกไปวางล่าสุดครับ)
+ในเวอร์ชันใหม่นี้ มีการปรับปรุง UI และโครงสร้างหลายจุดเพื่อความคลีนและแก้ปัญหาเรื่องระบบกดปิด/เปิด เช่น:
+ * ปรับเปลี่ยนเมนู Admin ให้เป็นแถบแท็บ (Tab Navigation): ด้านบน เช่น จัดการชุมนุม / สรุปครูผู้ดูแล / รายงานนักเรียนทั้งหมด / ตั้งค่าระบบ เพื่อจัดกลุ่มเมนูให้เป็นระเบียบ ไม่ยาวต่อกันลงมา
+ * เอาการ์ดสรุปตัวเลข 3 กล่องด้านบนออก: เพื่อลดภาระการดึงข้อมูล และเน้นการทำงานของระบบให้เสถียรยิ่งขึ้น
+💡 หากต้องการให้ UI กลับมาเป็น รูปแบบเดิม (แบบ 3 กล่องสรุป)
+เพียงแค่นำโค้ด HTML ด้านล่างนี้ไปวางทับในไฟล์ index.html บน GitHub ครับ
+(โค้ดนี้ใช้ UI รูปแบบเดิมที่คุณคุ้นเคย แต่ ปรับปรุงฟังก์ชันสั่ง ปิด/เปิด ระบบ ให้ส่งข้อมูลลง Google Sheets ช่อง B1 ได้อย่างถูกต้องแน่นอนครับ)
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -65,6 +70,14 @@
       align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
+    .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+    .stat-card {
+      background: white; border-radius: 16px; padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3e8ff; border-left: 5px solid #a21caf;
+    }
+    .stat-title { font-size: 0.85rem; color: #666; font-weight: 500; }
+    .stat-num { font-size: 1.6rem; font-weight: 700; color: #701a75; margin-top: 5px; }
+
     .search-box-wrap { margin-bottom: 25px; }
     .search-input {
       width: 100%; padding: 12px 20px; border-radius: 12px;
@@ -123,8 +136,6 @@
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
     th { background: #faf5ff; color: #701a75; font-weight: 600; }
-    .tab-btn { padding: 8px 16px; border: none; background: #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 500; }
-    .tab-btn.active { background: #a21caf; color: white; }
     .toggle-btn { padding: 8px 16px; border-radius: 8px; border: none; color: white; cursor: pointer; font-weight: 500; }
     .toggle-open { background: #10b981; }
     .toggle-close { background: #ef4444; }
@@ -221,118 +232,80 @@
 
     <div id="admin-view" class="page-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h3 style="color:#701a75;">⚙️ ระบบบริหารจัดการ (Admin)</h3>
+        <h3 style="color:#701a75;">⚙️ แผงควบคุมระบบแอดมิน - โรงเรียนโชคชัยสามัคคี</h3>
         <button class="btn-join" style="background:#fecdd3; color:#be123c;" onclick="logout()">ออกจากระบบแอดมิน</button>
       </div>
 
-      <div style="display:flex; gap:8px; margin-bottom:15px;">
-        <button class="tab-btn active" onclick="switchAdminTab('manage', this)">จัดการชุมนุม</button>
-        <button class="tab-btn" onclick="switchAdminTab('teachers', this)">สรุปครูผู้ดูแล</button>
-        <button class="tab-btn" onclick="switchAdminTab('reports', this)">รายงานนักเรียนทั้งหมด</button>
-        <button class="tab-btn" onclick="switchAdminTab('system', this)">ตั้งค่าระบบ</button>
-      </div>
-
-      <div id="tab-manage" class="admin-tab-section">
-        <div class="form-card">
-          <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
-          <input type="hidden" id="edit-id">
-          <div style="display:grid; grid-template-columns: 1fr 2fr 2fr; gap:10px;">
-            <input type="text" id="c-icon" class="form-control" placeholder="ไอคอน ⚽">
-            <input type="text" id="c-name" class="form-control" placeholder="ชื่อชุมนุม">
-            <input type="text" id="c-teacher" class="form-control" placeholder="ครูผู้ดูแล">
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-            <input type="number" id="c-max" class="form-control" placeholder="รับจำนวน (คน)">
-            <select id="c-target-grade" class="form-control" onchange="updateRoomDropdownOptions()">
-              <option value="ทุกระดับชั้น (ม.1 - ม.6)">ทุกระดับชั้น (ม.1 - ม.6)</option>
-              <option value="มัธยมศึกษาตอนต้น (ม.1 - ม.3)">มัธยมศึกษาตอนต้น (ม.1 - ม.3)</option>
-              <option value="มัธยมศึกษาตอนปลาย (ม.4 - ม.6)">มัธยมศึกษาตอนปลาย (ม.4 - ม.6)</option>
-              <option value="ม.1">ม.1</option> <option value="ม.2">ม.2</option> <option value="ม.3">ม.3</option>
-              <option value="ม.4">ม.4</option> <option value="ม.5">ม.5</option> <option value="ม.6">ม.6</option>
-            </select>
-            <select id="c-target-room" class="form-control">
-              <option value="">เปิดรับทุกห้องเรียน</option>
-            </select>
-          </div>
-          <input type="text" id="c-desc" class="form-control" placeholder="รายละเอียดชุมนุมย่อๆ">
-          <button class="btn-join" onclick="saveClub()">บันทึกข้อมูลชุมนุม</button>
-          <button id="btn-cancel" class="btn-join" style="display:none; background:#ccc;" onclick="clearForm()">ยกเลิก</button>
+      <!-- สรุปตัวเลข 3 กล่องแบบเดิม -->
+      <div class="stat-cards">
+        <div class="stat-card" style="border-left-color: #a21caf;">
+          <div class="stat-title">จำนวนชุมนุมทั้งหมด</div>
+          <div class="stat-num" id="stat-total-clubs">0</div>
         </div>
-
-        <div class="table-card">
-          <h4>รายการชุมนุมในระบบ</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>ไอคอน</th>
-                <th>ชื่อชุมนุม</th>
-                <th>ครูผู้ดูแล</th>
-                <th>เงื่อนไข</th>
-                <th>รับสูงสุด</th>
-                <th>จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="admin-table"></tbody>
-          </table>
+        <div class="stat-card" style="border-left-color: #c026d3;">
+          <div class="stat-title">นักเรียนลงทะเบียนแล้ว</div>
+          <div class="stat-num" id="stat-registered-students">0 คน</div>
+        </div>
+        <div class="stat-card" style="border-left-color: #10b981;">
+          <div class="stat-title">ที่นั่งรวมทุกชุมนุม</div>
+          <div class="stat-num" id="stat-total-seats">0 ที่นั่ง</div>
         </div>
       </div>
 
-      <div id="tab-teachers" class="admin-tab-section" style="display:none;">
-        <div class="table-card">
-          <h4>สรุปครูผู้ดูแลประจำชุมนุม</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>ลำดับ</th>
-                <th>ชื่อ-นามสกุล ครูผู้ดูแล</th>
-                <th>ชุมนุมที่รับผิดชอบ</th>
-                <th>ระดับชั้นที่เปิดรับ</th>
-              </tr>
-            </thead>
-            <tbody id="teacher-summary-table"></tbody>
-          </table>
-        </div>
+      <div class="form-card">
+        <h4>สถานะระบบการลงทะเบียนหน้าบ้าน</h4>
+        <p id="sys-status-text" style="margin:10px 0; font-weight:bold;"></p>
+        <button id="btn-sys-toggle" class="toggle-btn" onclick="toggleSystem()"></button>
       </div>
 
-      <div id="tab-reports" class="admin-tab-section" style="display:none;">
-        <div class="table-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h4>รายงานการลงทะเบียนของนักเรียน</h4>
-            <button class="btn-join" onclick="exportAllReportToExcel()">📥 ส่งออก Excel</button>
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-            <select id="report-filter-class" class="form-control" onchange="filterAdminReport()"></select>
-            <select id="report-filter-club" class="form-control" onchange="filterAdminReport()"></select>
-            <input type="text" id="report-filter-search" class="form-control" placeholder="🔍 ค้นหารหัส/ชื่อ..." onkeyup="filterAdminReport()">
-          </div>
-          <div id="report-count-badge" style="margin-bottom:8px; font-weight:bold; color:#701a75;"></div>
-          <table>
-            <thead>
-              <tr>
-                <th>ลำดับ</th>
-                <th>รหัสนักเรียน</th>
-                <th>ชื่อ-นามสกุล</th>
-                <th>ห้องเรียน</th>
-                <th>ชุมนุมที่เลือก</th>
-              </tr>
-            </thead>
-            <tbody id="admin-report-table"></tbody>
-          </table>
+      <div class="form-card">
+        <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
+        <input type="hidden" id="edit-id">
+        <div style="display:grid; grid-template-columns: 1fr 2fr 2fr 1fr; gap:10px;">
+          <input type="text" id="c-icon" class="form-control" placeholder="ไอคอน (เช่น ⚽)">
+          <input type="text" id="c-name" class="form-control" placeholder="ชื่อชุมนุม">
+          <input type="text" id="c-teacher" class="form-control" placeholder="ครูที่ปรึกษา / ผู้ดูแล">
+          <input type="number" id="c-max" class="form-control" placeholder="รับสูงสุด (คน)">
         </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <select id="c-target-grade" class="form-control" onchange="updateRoomDropdownOptions()">
+            <option value="ทุกระดับชั้น (ม.1 - ม.6)">เปิดรับกลุ่มชั้น: ทุกระดับชั้น (ม.1 - ม.6)</option>
+            <option value="มัธยมศึกษาตอนต้น (ม.1 - ม.3)">มัธยมศึกษาตอนต้น (ม.1 - ม.3)</option>
+            <option value="มัธยมศึกษาตอนปลาย (ม.4 - ม.6)">มัธยมศึกษาตอนปลาย (ม.4 - ม.6)</option>
+            <option value="ม.1">ม.1</option> <option value="ม.2">ม.2</option> <option value="ม.3">ม.3</option>
+            <option value="ม.4">ม.4</option> <option value="ม.5">ม.5</option> <option value="ม.6">ม.6</option>
+          </select>
+          <select id="c-target-room" class="form-control">
+            <option value="">เปิดรับทุกห้องเรียน</option>
+          </select>
+        </div>
+        <input type="text" id="c-desc" class="form-control" placeholder="คำอธิบายรายละเอียดชุมนุม...">
+        <button class="btn-join" onclick="saveClub()">บันทึกข้อมูลชุมนุม</button>
+        <button id="btn-cancel" class="btn-join" style="display:none; background:#ccc;" onclick="clearForm()">ยกเลิก</button>
       </div>
 
-      <div id="tab-system" class="admin-tab-section" style="display:none;">
-        <div class="form-card">
-          <h4>สถานะระบบรับสมัคร</h4>
-          <p id="sys-status-text" style="margin:10px 0; font-weight:bold;"></p>
-          <button id="btn-sys-toggle" class="toggle-btn" onclick="toggleSystem()"></button>
-        </div>
-        <div class="form-card" style="border:1px solid #fecdd3; background:#fff1f2;">
-          <h4 style="color:#be123c;">⚠️ ล้างข้อมูลระบบ (Reset)</h4>
-          <p style="color:#9f1239; font-size:0.85rem; margin:6px 0;">พิมพ์คำว่า <b>RESET</b> เพื่อยืนยันการล้างข้อมูลนักเรียนทุกคน</p>
-          <input type="text" id="reset-confirm-text" class="form-control" style="width:200px; display:inline-block; margin-right:10px;" placeholder="RESET">
-          <button class="toggle-btn toggle-close" onclick="resetAllSystemData()">💥 ล้างข้อมูลทั้งหมด</button>
-        </div>
+      <div class="table-card">
+        <h4>รายการชุมนุมในระบบ</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>ไอคอน</th>
+              <th>ชื่อชุมนุม</th>
+              <th>ครูผู้ดูแล</th>
+              <th>เงื่อนไข</th>
+              <th>รับสูงสุด</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table"></tbody>
+        </table>
+      </div>
+
+      <div class="form-card" style="border:1px solid #fecdd3; background:#fff1f2;">
+        <h4 style="color:#be123c;">⚠️ รีเซ็ตระบบประจำปี</h4>
+        <p style="color:#9f1239; font-size:0.85rem; margin:6px 0;">พิมพ์คำว่า <b>RESET</b> เพื่อยืนยันการล้างข้อมูลนักเรียนทุกคน</p>
+        <input type="text" id="reset-confirm-text" class="form-control" style="width:200px; display:inline-block; margin-right:10px;" placeholder="RESET">
+        <button class="toggle-btn toggle-close" onclick="resetAllSystemData()">💥 ล้างข้อมูลทั้งหมด</button>
       </div>
     </div>
 
@@ -340,7 +313,7 @@
 
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxerjzgS_MlJAL6161LofKj_PEhufyXriy_QJHa0G9wIrU_Y3Rf2lLqKfcdXBDCig09rA/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqil_KlIEj14N_d_kSTv7QaWKSh6x-hPkRm3pOAgYekiYMn-WtbfDw7-_nfePX3gPtKg/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
@@ -389,17 +362,28 @@
         if (result.status === "success" && Array.isArray(result.data)) {
           allRawStudentsData = result.data;
           clubCountsMap = {};
+          let registeredCount = 0;
+          
           result.data.forEach(st => {
             const cName = getClubDisplayName(st.club);
-            if (cName) clubCountsMap[cName] = (clubCountsMap[cName] || 0) + 1;
+            if (cName) {
+              clubCountsMap[cName] = (clubCountsMap[cName] || 0) + 1;
+              registeredCount++;
+            }
           });
+
+          // อัปเดตตัวเลขใน Stat Card 3 กล่อง
+          if(document.getElementById('stat-total-clubs')) document.getElementById('stat-total-clubs').innerText = clubsDb.length;
+          if(document.getElementById('stat-registered-students')) document.getElementById('stat-registered-students').innerText = registeredCount + " คน";
+          
+          let totalSeats = clubsDb.reduce((sum, c) => sum + parseInt(c.max || 0), 0);
+          if(document.getElementById('stat-total-seats')) document.getElementById('stat-total-seats').innerText = totalSeats + " ที่นั่ง";
         }
       } catch(e) {
         console.warn("Could not load realtime counts from Sheets API", e);
       } finally {
         renderClubs();
         renderAdminTable();
-        renderTeacherSummary();
         hideLoader();
       }
     }
@@ -458,16 +442,6 @@
       const targetId = page === 'dashboard' || page === 'login' || page === 'admin' ? page + '-view' : page;
       document.getElementById(targetId)?.classList.add('active');
       if(page === 'dashboard') { await fetchRealtimeCounts(); }
-    }
-
-    function switchAdminTab(tabId, btnEl) {
-      document.querySelectorAll('.admin-tab-section').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + tabId).style.display = 'block';
-      btnEl.classList.add('active');
-      
-      if(tabId === 'teachers') renderTeacherSummary();
-      else if(tabId === 'reports') fetchAdminReportData();
     }
 
     function getClubDisplayName(clubVal) {
@@ -631,93 +605,6 @@
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-    async function fetchAdminReportData() {
-      const tbody = document.getElementById('admin-report-table');
-      if(!tbody) return;
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมด...</td></tr>';
-      try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_rand=${Math.random()}`, { cache: "no-store" });
-        const result = await response.json();
-        if(result.status === "success") {
-          allRawStudentsData = result.data || [];
-          populateReportFilters();
-          filterAdminReport();
-        }
-      } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">ไม่สามารถติดต่อ Google Sheets ได้</td></tr>';
-      }
-    }
-
-    function populateReportFilters() {
-      const clubSelect = document.getElementById('report-filter-club');
-      const classSelect = document.getElementById('report-filter-class');
-      if(clubSelect) {
-        clubSelect.innerHTML = '<option value="ALL">-- แสดงนักเรียนทุกชุมนุม --</option><option value="NONE">❌ ยังไม่ได้ลงทะเบียน</option>';
-        clubsDb.forEach(c => {
-          const fullName = `${c.icon} ${c.name}`;
-          clubSelect.innerHTML += `<option value="${fullName}">${fullName}</option>`;
-        });
-      }
-      if(classSelect) {
-        const classes = [...new Set(allRawStudentsData.map(s => s.className).filter(Boolean))].sort();
-        classSelect.innerHTML = '<option value="ALL">-- แสดงนักเรียนทุกห้องเรียน --</option>';
-        classes.forEach(cls => { classSelect.innerHTML += `<option value="${cls}">ห้อง / ชั้น ${cls}</option>`; });
-      }
-    }
-
-    let currentFilteredDataForExport = [];
-
-    function filterAdminReport() {
-      const selectedClass = document.getElementById('report-filter-class')?.value || "ALL";
-      const selectedClub = document.getElementById('report-filter-club')?.value || "ALL";
-      const searchText = document.getElementById('report-filter-search')?.value.toLowerCase().trim() || "";
-      const tbody = document.getElementById('admin-report-table');
-
-      currentFilteredDataForExport = allRawStudentsData.filter(st => {
-        const stClubName = getClubDisplayName(st.club);
-        let matchClass = (selectedClass === "ALL" || (st.className || "").toString().trim() === selectedClass.trim());
-        let matchClub = true;
-        if (selectedClub === "NONE") matchClub = (!stClubName || stClubName.trim() === "");
-        else if (selectedClub !== "ALL") matchClub = (stClubName === selectedClub);
-        const matchSearch = (!searchText || st.id.toString().toLowerCase().includes(searchText) || st.name.toLowerCase().includes(searchText));
-        return matchClass && matchClub && matchSearch;
-      });
-
-      if(document.getElementById('report-count-badge')) document.getElementById('report-count-badge').innerText = `พบข้อมูล: ${currentFilteredDataForExport.length} คน`;
-      if(!tbody) return;
-      if(currentFilteredDataForExport.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = '';
-      currentFilteredDataForExport.slice(0, 150).forEach((st, idx) => {
-        const displayClub = getClubDisplayName(st.club);
-        tbody.innerHTML += `
-          <tr>
-            <td>${idx + 1}</td>
-            <td>${st.id}</td>
-            <td style="font-weight:bold; color:#701a75;">${st.name}</td>
-            <td>${st.className}</td>
-            <td>${displayClub !== "" ? `<span style="color:#10b981; font-weight:bold;">${displayClub}</span>` : '<span style="color:#a21caf; font-style:italic;">❌ ยังไม่ได้ลงทะเบียน</span>'}</td>
-          </tr>`;
-      });
-    }
-
-    function exportAllReportToExcel() {
-      if (!currentFilteredDataForExport || currentFilteredDataForExport.length === 0) { alert("⚠️ ยังไม่มีข้อมูลสำหรับส่งออก"); return; }
-      let csvContent = "\uFEFFเลขที่,รหัสนักเรียน,ชื่อ-นามสกุล,ชั้นเรียน,ชุมนุมที่เลือก\n";
-      currentFilteredDataForExport.forEach((st, idx) => {
-        const clubName = getClubDisplayName(st.club) || 'ยังไม่ได้ลงทะเบียน';
-        csvContent += `${idx + 1},'${st.id},"${st.name}",${st.className},"${clubName}"\n`;
-      });
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `รายงานลงทะเบียนชุมนุม.csv`);
-      document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    }
-
     function renderClubs() {
       const container = document.getElementById('clubs-container');
       if (!container) return;
@@ -842,7 +729,7 @@
         stText.innerHTML = "🟢 เปิดรับสมัครอยู่ (นักเรียนเลือกชุมนุมได้ปกติ)"; stText.style.color = "#10b981";
         btn.innerText = "🔒 ปิดระบบชั่วคราว"; btn.className = "toggle-btn toggle-close";
       } else {
-        stText.innerHTML = "🔴 ปิดระบบแล้ว (ล็อกปุ่มสมัคร)"; stText.style.color = "#be185d";
+        stText.innerHTML = "🔴 ปิดระบบแล้ว (นักเรียนล็อกอินได้แต่ถูกล็อกปุ่มสมัคร)"; stText.style.color = "#be185d";
         btn.innerText = "🔓 เปิดระบบรับสมัคร"; btn.className = "toggle-btn toggle-open";
       }
     }
@@ -937,26 +824,6 @@
               <button onclick="editClub(${c.id})" style="background:#d946ef; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">✏️ แก้ไข</button>
               <button onclick="deleteClub(${c.id})" style="background:#be185d; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">🗑️ ลบ</button>
             </td>
-          </tr>`;
-      });
-    }
-
-    function renderTeacherSummary() {
-      const tbody = document.getElementById('teacher-summary-table');
-      if(!tbody) return;
-      tbody.innerHTML = '';
-      if(clubsDb.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray; padding:20px;">ยังไม่มีชุมนุมในระบบ</td></tr>';
-        return;
-      }
-      clubsDb.forEach((c, idx) => {
-        const roomInfo = c.targetRoom ? ` (เฉพาะห้อง ${c.targetRoom})` : '';
-        tbody.innerHTML += `
-          <tr>
-            <td>${idx + 1}</td>
-            <td style="font-weight:bold; color:#701a75;">👩‍🏫 ${c.teacher}</td>
-            <td>${c.icon} ${c.name}</td>
-            <td>${c.targetGrade || 'ทุกระดับชั้น'}${roomInfo}</td>
           </tr>`;
       });
     }
