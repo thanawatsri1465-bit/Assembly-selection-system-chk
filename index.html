@@ -476,13 +476,14 @@
     // 2. บันทึกข้อมูลชุมนุมลง Google Sheets (ชีต Config ช่อง A1)
     async function syncClubsToSheet() {
       try {
-        const formData = new FormData();
-        formData.append('action', 'saveClubs');
-        formData.append('clubs', JSON.stringify(clubsDb));
+        const params = new URLSearchParams();
+        params.append('action', 'saveClubs');
+        params.append('clubs', JSON.stringify(clubsDb));
 
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
         });
         return await response.json();
       } catch(e) {
@@ -497,13 +498,14 @@
       renderClubs();
       
       try {
-        const formData = new FormData();
-        formData.append('action', 'toggleSystem');
-        formData.append('isOpen', isSystemOpen);
+        const params = new URLSearchParams();
+        params.append('action', 'toggleSystem');
+        params.append('isOpen', isSystemOpen);
 
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
         });
       } catch(e) {
         console.error("Error toggling system:", e);
