@@ -374,7 +374,7 @@
 
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRU1P4DHQhA-J3s97vHsi0NpMjHkwSCyZUHJcMRNNqPxrpSg_Yf5EJ8VzclYd75Az5UA/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFsdpPzbm1DVOvSxrnVvs1AvAxurIL8OO7vlqRwU3CBQ79QKrzLeFzveEl1uvDPHmuwA/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
@@ -387,14 +387,12 @@
       { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
     ];
 
-    let savedClubs = JSON.parse(localStorage.getItem('clubsDb'));
-    let clubsDb = (savedClubs !== null && Array.isArray(savedClubs)) ? savedClubs : defaultClubs;
-
-    function saveClubsToStorage() {
-      localStorage.setItem('clubsDb', JSON.stringify(clubsDb));
-    }
+    let clubsDb = defaultClubs;
 
     window.onload = () => { 
+      // 🧹 เคลียร์แคช LocalStorage ทิ้งเมื่อเปิดเว็บ เพื่อป้องกันการค้างค่าเก่า
+      localStorage.removeItem('clubsDb');
+
       document.getElementById('school-logo-top').src = LOGO_URL;
       document.getElementById('school-logo-login').src = LOGO_URL;
 
@@ -415,7 +413,6 @@
         
         if (result.clubs !== null && typeof result.clubs !== "undefined" && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
-          saveClubsToStorage();
         }
 
         if (typeof result.isSystemOpen !== "undefined") {
@@ -549,7 +546,7 @@
       submitBtn.innerText = "กำลังตรวจสอบข้อมูล...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}`);
+        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&t=${Date.now()}`);
         const result = await response.json();
 
         if (result.status === "success" && result.role === "student") {
@@ -998,7 +995,6 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
-      saveClubsToStorage();
       syncClubsToSheet();
       clearForm();
       renderAdminTable();
@@ -1040,7 +1036,6 @@
     function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
-        saveClubsToStorage();
         syncClubsToSheet();
         renderAdminTable();
         renderTeacherSummary();
