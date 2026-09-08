@@ -421,9 +421,15 @@
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
-    let clubsDb = [];
 
-    window.onload = async () => { 
+    const defaultClubs = [
+      { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
+      { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
+    ];
+
+    let clubsDb = defaultClubs;
+
+    window.onload = () => { 
       localStorage.removeItem('clubsDb');
 
       document.getElementById('school-logo-top').src = LOGO_URL;
@@ -431,9 +437,11 @@
 
       updateSystemUI(); 
       updateRoomDropdownOptions();
-      
-      // ดึงข้อมูลสดจาก Google Sheet ทันทีที่เข้าเว็บ
-      await fetchRealtimeCounts(); 
+      renderClubs(); 
+      fetchRealtimeCounts(); 
+      renderAdminTable(); 
+      renderTeacherSummary();
+      updateDashboardStats();
     };
 
     async function fetchRealtimeCounts() {
@@ -441,7 +449,7 @@
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
-        if (result.clubs && Array.isArray(result.clubs) && result.clubs.length > 0) {
+        if (result.clubs && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
         }
 
@@ -470,38 +478,34 @@
       }
     }
 
-    async function syncClubsToSheet() {
-      try {
-        const formData = new FormData();
-        formData.append('action', 'saveClubs');
-        formData.append('clubs', JSON.stringify(clubsDb));
+    function syncClubsToSheet() {
+      const params = new URLSearchParams();
+      params.append('action', 'saveClubs');
+      params.append('clubs', JSON.stringify(clubsDb));
 
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: formData
-        });
-      } catch(e) {
-        console.error("Error saving clubs:", e);
-      }
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      }).catch(e => console.error("Error saving clubs:", e));
     }
 
-    async function toggleSystem() {
+    function toggleSystem() {
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
       renderClubs();
       
-      try {
-        const formData = new FormData();
-        formData.append('action', 'toggleSystem');
-        formData.append('isOpen', isSystemOpen);
+      const params = new URLSearchParams();
+      params.append('action', 'toggleSystem');
+      params.append('isOpen', isSystemOpen);
 
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: formData
-        });
-      } catch(e) {
-        console.error("Error toggling system:", e);
-      }
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      }).catch(e => console.error("Error toggling system:", e));
     }
 
     function updateRoomDropdownOptions(selectedRoomValue = "") {
@@ -998,7 +1002,7 @@
       }
     }
 
-    async function saveClub() {
+    function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
       const name = document.getElementById('c-name').value;
@@ -1018,7 +1022,7 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
-      await syncClubsToSheet();
+      syncClubsToSheet();
       clearForm();
       renderAdminTable();
       renderTeacherSummary();
@@ -1056,10 +1060,10 @@
       }
     }
 
-    async function deleteClub(id) {
+    function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
-        await syncClubsToSheet();
+        syncClubsToSheet();
         renderAdminTable();
         renderTeacherSummary();
         renderClubs(); 
