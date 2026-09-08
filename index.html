@@ -177,7 +177,12 @@
       </div>
 
       <h3 style="margin-bottom: 20px; font-family:'Kanit'; color:#701a75;">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</h3>
-      <div class="clubs-grid" id="clubs-container"></div>
+      <div class="clubs-grid" id="clubs-container">
+        <!-- แสดงโหลดดิ้งชั่วคราวขณะดึงข้อมูลจาก Google Sheets -->
+        <div style="grid-column: 1/-1; text-align:center; padding:50px; color:#a21caf; font-weight:bold;">
+          ⏳ กำลังดึงข้อมูลชุมนุมล่าสุดจากระบบ...
+        </div>
+      </div>
     </div>
   </div>
 
@@ -423,7 +428,7 @@
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
-    let clubsDb = [];
+    let clubsDb = []; // ลบข้อมูลตัวอย่างเก่าออก ตั้งค่าเริ่มต้นเป็นอาร์เรย์ว่าง
 
     window.onload = async () => { 
       localStorage.removeItem('clubsDb');
@@ -446,6 +451,8 @@
         
         if (result.clubs && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
+        } else {
+          clubsDb = [];
         }
 
         if (typeof result.isSystemOpen !== "undefined") {
@@ -904,7 +911,7 @@
       });
 
       if(filteredClubs.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:gray;">🔍 ไม่พบกิจกรรมชุมนุมตามเงื่อนไขที่ค้นหา</div>`;
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:gray;">🔍 ไม่พบกิจกรรมชุมนุมในระบบ (กรุณาเพิ่มชุมนุมในหน้า Admin)</div>`;
         return;
       }
 
