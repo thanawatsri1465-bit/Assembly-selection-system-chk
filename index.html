@@ -17,7 +17,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-main); min-height: 100vh; padding-bottom: 40px; }
 
-    /* Full Page Loader Spinner */
     #full-page-loader {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(255, 255, 255, 0.95);
@@ -34,10 +33,8 @@
     .loader-title { margin-top: 15px; font-size: 1.1rem; font-weight: 600; color: #701a75; }
     .loader-subtitle { font-size: 0.85rem; color: #a21caf; margin-top: 4px; }
 
-    /* Header Bar */
     .top-header {
-      background: #ffffff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       padding: 10px 0; border-bottom: 1px solid #f0e7f6;
     }
     .header-container {
@@ -47,18 +44,14 @@
     .header-logo { width: 38px; height: 38px; object-fit: contain; }
     .header-title { font-size: 1.1rem; font-weight: 700; color: #701a75; }
 
-    /* Main Container */
     .container { max-width: 1000px; margin: 25px auto; padding: 0 20px; }
     .page-view { display: none; }
     .page-view.active { display: block; }
 
-    /* Dashboard Hero Banner */
     .hero-purple {
-      background: var(--primary-gradient);
-      color: white; border-radius: 20px;
+      background: var(--primary-gradient); color: white; border-radius: 20px;
       padding: 40px 20px; text-align: center;
-      box-shadow: 0 10px 25px rgba(162, 28, 175, 0.2);
-      margin-bottom: 25px;
+      box-shadow: 0 10px 25px rgba(162, 28, 175, 0.2); margin-bottom: 25px;
     }
     .hero-school-name { font-size: 1rem; opacity: 0.9; margin-bottom: 5px; font-weight: 300; }
     .hero-main-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; letter-spacing: 0.5px; }
@@ -68,49 +61,35 @@
       padding: 8px 24px; border-radius: 50px; font-weight: 600;
       font-size: 0.9rem; cursor: pointer; display: inline-flex;
       align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
     }
-    .btn-login-capsule:hover { transform: translateY(-2px); }
 
-    /* Search Box */
     .search-box-wrap { margin-bottom: 25px; }
     .search-input {
       width: 100%; padding: 12px 20px; border-radius: 12px;
-      border: 1px solid #e9d5ff; background: white; font-size: 0.95rem;
-      outline: none; transition: border-color 0.2s;
-    }
-    .search-input:focus { border-color: var(--primary-purple); }
-
-    /* Section Title */
-    .section-title {
-      font-size: 1.1rem; font-weight: 700; color: #701a75;
-      margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+      border: 1px solid #e9d5ff; background: white; font-size: 0.95rem; outline: none;
     }
 
-    /* Clubs Grid */
+    .section-title { font-size: 1.1rem; font-weight: 700; color: #701a75; margin-bottom: 15px; }
+
     .clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
     .club-card {
       background: white; border-radius: 16px; padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3e8ff;
-      display: flex; gap: 15px; transition: transform 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3e8ff; display: flex; gap: 15px;
     }
-    .club-card:hover { transform: translateY(-3px); }
     .club-card.selected-card { border: 2px solid #10b981; background: #f0fdf4; }
     .club-icon { font-size: 2rem; width: 50px; height: 50px; background: #faf5ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
 
     .progress-container { margin: 8px 0; }
     .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
     .progress-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; transition: width 0.3s ease; }
+    .progress-bar-fill { height: 100%; }
 
     .btn-join {
       background: var(--btn-gradient); color: white; border: none; padding: 6px 14px;
-      border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s;
+      border-radius: 8px; font-size: 0.85rem; cursor: pointer;
     }
-    .btn-join:hover { opacity: 0.9; }
     .btn-joined { background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; }
 
-    /* Login Box */
     .login-wrapper {
       min-height: calc(100vh - 120px); display: flex;
       justify-content: center; align-items: center; background: var(--primary-gradient);
@@ -130,22 +109,14 @@
       width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0;
       border-radius: 10px; font-size: 0.9rem; outline: none; margin-bottom: 15px;
     }
-    .form-control:focus { border-color: var(--primary-purple); }
 
     .btn-login-submit {
       width: 100%; padding: 12px; background: var(--btn-gradient);
-      color: white; border: none; border-radius: 10px; font-weight: 600;
-      font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s;
+      color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer;
     }
-    .btn-login-submit:hover { opacity: 0.9; }
 
-    .btn-back-home {
-      display: inline-block; margin-top: 15px; background: none; border: none;
-      color: #888; font-size: 0.85rem; cursor: pointer; text-decoration: none;
-    }
-    .btn-back-home:hover { color: #555; }
+    .btn-back-home { display: inline-block; margin-top: 15px; background: none; border: none; color: #888; font-size: 0.85rem; cursor: pointer; }
 
-    /* Tables & Forms */
     .table-card, .form-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
@@ -159,14 +130,12 @@
 </head>
 <body>
 
-  <!-- Full Page Spinner Loader -->
   <div id="full-page-loader">
     <div class="spinner"></div>
     <div class="loader-title" id="loader-title">กำลังเชื่อมต่อระบบ...</div>
     <div class="loader-subtitle" id="loader-subtitle">โปรดรอสักครู่ ระบบกำลังโหลดข้อมูล</div>
   </div>
 
-  <!-- Top Header -->
   <header class="top-header">
     <div class="header-container">
       <img id="school-logo-top" class="header-logo" src="" alt="Logo">
@@ -176,15 +145,11 @@
 
   <div class="container">
     
-    <!-- หน้าหลัก Dashboard -->
     <div id="dashboard-view" class="page-view active">
-      
       <div id="hero-banner" class="hero-purple">
         <div class="hero-school-name">โรงเรียนโชคชัยสามัคคี</div>
         <div class="hero-main-title">เลือกลงทะเบียนกิจกรรมชุมนุมประจำปี</div>
-        <button class="btn-login-capsule" onclick="switchPage('login')">
-          🔒 เข้าสู่ระบบลงทะเบียน
-        </button>
+        <button class="btn-login-capsule" onclick="switchPage('login')">🔒 เข้าสู่ระบบลงทะเบียน</button>
       </div>
 
       <div id="student-alert" style="display:none; background:white; padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid #e9d5ff;">
@@ -204,14 +169,10 @@
         </div>
       </div>
 
-      <div class="section-title">
-        📚 รายชื่อกิจกรรมชุมนุมทั้งหมด
-      </div>
-
+      <div class="section-title">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</div>
       <div id="clubs-container" class="clubs-grid"></div>
     </div>
 
-    <!-- หน้าเข้าสู่ระบบ -->
     <div id="login-view" class="page-view">
       <div class="login-wrapper">
         <div class="login-card">
@@ -230,7 +191,6 @@
       </div>
     </div>
 
-    <!-- หน้าชุมนุมของฉัน -->
     <div id="myclub-view" class="page-view">
       <div class="table-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -257,7 +217,6 @@
       </div>
     </div>
 
-    <!-- หน้าผู้ดูแลระบบ (Admin) -->
     <div id="admin-view" class="page-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h3 style="color:#701a75;">⚙️ ระบบบริหารจัดการ (Admin)</h3>
@@ -271,7 +230,6 @@
         <button class="tab-btn" onclick="switchAdminTab('system', this)">ตั้งค่าระบบ</button>
       </div>
 
-      <!-- Tab 1: จัดการชุมนุม -->
       <div id="tab-manage" class="admin-tab-section">
         <div class="form-card">
           <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
@@ -317,7 +275,6 @@
         </div>
       </div>
 
-      <!-- Tab 2: สรุปครูผู้ดูแล -->
       <div id="tab-teachers" class="admin-tab-section" style="display:none;">
         <div class="table-card">
           <h4>สรุปครูผู้ดูแลประจำชุมนุม</h4>
@@ -335,7 +292,6 @@
         </div>
       </div>
 
-      <!-- Tab 3: รายงานนักเรียน -->
       <div id="tab-reports" class="admin-tab-section" style="display:none;">
         <div class="table-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -363,7 +319,6 @@
         </div>
       </div>
 
-      <!-- Tab 4: ตั้งค่าระบบ -->
       <div id="tab-system" class="admin-tab-section" style="display:none;">
         <div class="form-card">
           <h4>สถานะระบบรับสมัคร</h4>
@@ -411,14 +366,11 @@
       updateSystemUI(); 
       updateRoomDropdownOptions();
       await fetchRealtimeCounts(); 
-      
-      // บังคับ Auto Sync ทุกๆ 5 วินาที เพื่อให้ทุกเครื่องเปลี่ยนสถานะตรงกันสดๆ
-      setInterval(fetchRealtimeCounts, 5000);
     };
 
     async function fetchRealtimeCounts() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if (result.clubs && Array.isArray(result.clubs)) {
@@ -451,7 +403,7 @@
     async function syncClubsToSheet() {
       try {
         const jsonStr = encodeURIComponent(JSON.stringify(clubsDb));
-        const response = await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${jsonStr}&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${jsonStr}&t=${Date.now()}`);
         return await response.json();
       } catch(e) {
         console.error("Error saving clubs:", e);
@@ -464,7 +416,7 @@
       updateSystemUI();
       renderClubs();
       try {
-        await fetch(`${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&nocache=${Date.now()}`);
+        await fetch(`${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&t=${Date.now()}`);
       } catch(e) { console.error("Error toggling system:", e); } 
       finally { hideLoader(); }
     }
@@ -532,7 +484,7 @@
       }
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&t=${Date.now()}`);
         const result = await response.json();
 
         if (result.status === "success" && result.role === "student") {
@@ -549,7 +501,7 @@
           alert(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับคุณ ${currentUser.name}`);
         } else {
           hideLoader();
-          alert(result.message || "ไม่พบรหัสนักเรียนนี้ในระบบ");
+          alert(result.message || "ไม่พบรหัสผู้ใช้งานนี้ในระบบ");
         }
       } catch (error) {
         hideLoader();
@@ -609,7 +561,7 @@
       showLoader("กำลังบันทึกข้อมูล...", "โปรดอย่าปิดหน้าจอ ระบบกำลังบันทึกข้อมูลลง Google Sheets");
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}`);
         const result = await response.json();
 
         if(result.status === "success") {
@@ -640,7 +592,7 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">กำลังโหลดรายชื่อเพื่อนร่วมชุมนุม...</td></tr>`;
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         if (result.status === "success") {
           currentClubMembers = result.data.filter(st => getClubDisplayName(st.club) === studentClub);
@@ -682,7 +634,7 @@
       if(!tbody) return;
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมด...</td></tr>';
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         if(result.status === "success") {
           allRawStudentsData = result.data || [];
@@ -1010,7 +962,7 @@
 
       showLoader("กำลังล้างข้อมูล...", "โปรดอย่าปิดหน้าจอ");
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=reset&nocache=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=reset`);
         const result = await response.json();
         if (result.status === "success") {
           if(document.getElementById('reset-confirm-text')) document.getElementById('reset-confirm-text').value = "";
