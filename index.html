@@ -17,7 +17,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-main); min-height: 100vh; padding-bottom: 40px; }
 
-    /* Full Page Loader */
+    /* Full Page Loader Spinner */
     #full-page-loader {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(255, 255, 255, 0.95);
@@ -34,7 +34,7 @@
     .loader-title { margin-top: 15px; font-size: 1.1rem; font-weight: 600; color: #701a75; }
     .loader-subtitle { font-size: 0.85rem; color: #a21caf; margin-top: 4px; }
 
-    /* Top Navbar */
+    /* Header Bar */
     .top-header {
       background: #ffffff;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -110,7 +110,7 @@
     .btn-join:hover { opacity: 0.9; }
     .btn-joined { background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; }
 
-    /* Login UI */
+    /* Login Box */
     .login-wrapper {
       min-height: calc(100vh - 120px); display: flex;
       justify-content: center; align-items: center; background: var(--primary-gradient);
@@ -145,7 +145,7 @@
     }
     .btn-back-home:hover { color: #555; }
 
-    /* Tables & Admin Components */
+    /* Tables & Forms */
     .table-card, .form-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
@@ -211,7 +211,7 @@
       <div id="clubs-container" class="clubs-grid"></div>
     </div>
 
-    <!-- หน้าเข้าสู่ระบบ (Login UI ตรงตามภาพ) -->
+    <!-- หน้าเข้าสู่ระบบ -->
     <div id="login-view" class="page-view">
       <div class="login-wrapper">
         <div class="login-card">
@@ -257,7 +257,7 @@
       </div>
     </div>
 
-    <!-- หน้า Admin -->
+    <!-- หน้าผู้ดูแลระบบ (Admin) -->
     <div id="admin-view" class="page-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h3 style="color:#701a75;">⚙️ ระบบบริหารจัดการ (Admin)</h3>
@@ -271,6 +271,7 @@
         <button class="tab-btn" onclick="switchAdminTab('system', this)">ตั้งค่าระบบ</button>
       </div>
 
+      <!-- Tab 1: จัดการชุมนุม -->
       <div id="tab-manage" class="admin-tab-section">
         <div class="form-card">
           <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
@@ -316,6 +317,7 @@
         </div>
       </div>
 
+      <!-- Tab 2: สรุปครูผู้ดูแล -->
       <div id="tab-teachers" class="admin-tab-section" style="display:none;">
         <div class="table-card">
           <h4>สรุปครูผู้ดูแลประจำชุมนุม</h4>
@@ -333,6 +335,7 @@
         </div>
       </div>
 
+      <!-- Tab 3: รายงานนักเรียน -->
       <div id="tab-reports" class="admin-tab-section" style="display:none;">
         <div class="table-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -360,6 +363,7 @@
         </div>
       </div>
 
+      <!-- Tab 4: ตั้งค่าระบบ -->
       <div id="tab-system" class="admin-tab-section" style="display:none;">
         <div class="form-card">
           <h4>สถานะระบบรับสมัคร</h4>
@@ -390,8 +394,8 @@
 
     function showLoader(title = "กำลังโหลดข้อมูล...", subtitle = "โปรดรอสักครู่ ระบบกำลังเชื่อมต่อ Google Sheets") {
       const loader = document.getElementById('full-page-loader');
-      document.getElementById('loader-title').innerText = title;
-      document.getElementById('loader-subtitle').innerText = subtitle;
+      if (document.getElementById('loader-title')) document.getElementById('loader-title').innerText = title;
+      if (document.getElementById('loader-subtitle')) document.getElementById('loader-subtitle').innerText = subtitle;
       if (loader) {
         loader.style.display = 'flex'; loader.style.opacity = '1'; loader.style.visibility = 'visible';
       }
@@ -406,8 +410,7 @@
     }
 
     window.onload = async () => { 
-      showLoader("กำลังเชื่อมต่อระบบ...", "กำลังดึงข้อมูลกิจกรรมชุมนุมล่าสุด");
-      localStorage.removeItem('clubsDb');
+      showLoader("กำลังเชื่อมต่อระบบ...", "กำลังดึงข้อมูลกิจกรรมชุมนุมล่าสุดจาก Google Sheets");
 
       if(document.getElementById('school-logo-top')) document.getElementById('school-logo-top').src = LOGO_URL;
       if(document.getElementById('school-logo-login')) document.getElementById('school-logo-login').src = LOGO_URL;
@@ -422,7 +425,11 @@
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
-        if (result.clubs && Array.isArray(result.clubs)) clubsDb = result.clubs;
+        // ดึงข้อมูลชุมนุมจริงจาก Google Sheets
+        if (result.clubs && Array.isArray(result.clubs) && result.clubs.length > 0) {
+          clubsDb = result.clubs;
+        }
+
         if (typeof result.isSystemOpen !== "undefined") {
           isSystemOpen = result.isSystemOpen;
           updateSystemUI();
@@ -437,7 +444,7 @@
           });
         }
       } catch(e) {
-        console.warn("Could not load realtime counts from Sheets API");
+        console.warn("Could not load realtime counts from Sheets API", e);
       } finally {
         renderClubs();
         renderAdminTable();
