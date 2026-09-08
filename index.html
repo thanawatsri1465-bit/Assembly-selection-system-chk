@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
-    /* 🚫 ซ่อนป้าย Netlify */
     #netlify-badge, [data-netlify-badge], [data-netlify-deploy-id], .netlify-badge, iframe#netlify-identity-widget, iframe[src*="netlify"], div[class*="netlify"], [class*="feedback"], [class*="badge"], [id*="badge"], [class*="drawer"] {
       display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
@@ -374,14 +373,14 @@
 
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3BhXkHcLxvKhn781uKIPDNOZ4y-5lVp_aXe-EESszSuS9umitPENch4fO-uQ02p5OUg/exec"; 
+    // ⚠️ นำ URL จากการ Deploy Apps Script ล่าสุดมาวางตรงนี้
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_NEW_DEPLOY_ID_HERE/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
     let currentClubMembers = [];
     let allRawStudentsData = [];
-    let clubCountsMap = {}; 
-    let autoRefreshInterval = null;
+    let clubCountsMap = {};
 
     const defaultClubs = [
       { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
@@ -407,29 +406,45 @@
       renderTeacherSummary();
       updateDashboardStats();
 
-      // 🚀 ตั้งเวลาดึงข้อมูลใหม่ทุกๆ 5 วินาที เพื่อให้อัปเดตสถานะตรงกันแบบเรียลไทม์
-      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-      autoRefreshInterval = setInterval(() => {
-        fetchRealtimeCounts();
-      }, 5000);
+      // 🚀 1. เช็กสถานะการ เปิด/ปิด ระบบแบบด่วนทุกๆ 1.5 วินาที (ไม่หน่วงแน่นอน)
+      setInterval(checkSystemStatusFast, 1500);
+
+      // 🚀 2. ดึงจำนวนคนที่สมัครแต่ละชุมนุมทุกๆ 5 วินาที
+      setInterval(fetchRealtimeCounts, 5000);
     };
 
-    async function fetchRealtimeCounts() {
+    // ⚡ ฟังก์ชันเช็กเฉพาะสถานะ เปิด/ปิด ระบบ (ตอบกลับเร็วมาก)
+    async function checkSystemStatusFast() {
       try {
-        // ⚡ เพิ่ม cache: 'no-store' และสุ่มพารามิเตอร์เพื่อป้องกันการจำแคชเก่า
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Math.random()}&t=${Date.now()}`, {
+        const response = await fetch(`${SCRIPT_URL}?action=getSystemStatus&_r=${Math.random()}`, {
           cache: 'no-store'
         });
         const result = await response.json();
         
-        if (result.clubs !== null && typeof result.clubs !== "undefined" && Array.isArray(result.clubs)) {
-          clubsDb = result.clubs;
-          saveClubsToStorage();
+        if (result.status === "success" && typeof result.isSystemOpen !== "undefined") {
+          if (isSystemOpen !== result.isSystemOpen) {
+            isSystemOpen = result.isSystemOpen;
+            updateSystemUI();
+            renderClubs(); // วาดหน้าปุ่มใหม่ทันที
+          }
         }
+      } catch(e) {
+        console.log("Status check error", e);
+      }
+    }
+
+    async function fetchRealtimeCounts() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, {
+          cache: 'no-store'
+        });
+        const result = await response.json();
 
         if (typeof result.isSystemOpen !== "undefined") {
-          isSystemOpen = result.isSystemOpen;
-          updateSystemUI();
+          if (isSystemOpen !== result.isSystemOpen) {
+            isSystemOpen = result.isSystemOpen;
+            updateSystemUI();
+          }
         }
 
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -452,19 +467,13 @@
       }
     }
 
-    function syncClubsToSheet() {
-      const url = `${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}&t=${Date.now()}`;
-      fetch(url, { method: 'POST', mode: 'no-cors' }).catch(e => console.error(e));
-    }
-
     function toggleSystem() {
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
       renderClubs();
       
-      const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&t=${Date.now()}`;
+      const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&_r=${Math.random()}`;
       fetch(url, { method: 'POST', mode: 'no-cors' })
-        .then(() => setTimeout(fetchRealtimeCounts, 500))
         .catch(e => console.error(e));
     }
 
@@ -546,7 +555,7 @@
       submitBtn.innerText = "กำลังตรวจสอบข้อมูล...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&t=${Date.now()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
 
         if (result.status === "success" && result.role === "student") {
@@ -625,7 +634,7 @@
       btnEl.innerText = "กำลังบันทึก...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&t=${Date.now()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
 
         if(result.status === "success") {
@@ -663,7 +672,7 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">กำลังโหลดรายชื่อเพื่อนร่วมชุมนุมจาก Google Sheet...</td></tr>`;
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
         
         if (result.status === "success") {
@@ -720,7 +729,7 @@
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมดจาก Google Sheets...</td></tr>';
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
         
         if(result.status === "success") {
@@ -946,7 +955,7 @@
       document.getElementById('stat-total-seats').innerText = `${totalSeats} ที่นั่ง`;
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
         
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -999,13 +1008,12 @@
       }
 
       saveClubsToStorage();
-      syncClubsToSheet();
       clearForm();
       renderAdminTable();
       renderTeacherSummary();
       renderClubs(); 
       updateDashboardStats();
-      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
+      alert('✅ บันทึกข้อมูลชุมนุมเรียบร้อยแล้ว');
     }
 
     function clearForm() {
@@ -1041,7 +1049,6 @@
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
         saveClubsToStorage();
-        syncClubsToSheet();
         renderAdminTable();
         renderTeacherSummary();
         renderClubs(); 
@@ -1109,11 +1116,11 @@
       btnReset.innerText = "กำลังสั่งล้างฐานข้อมูลระบบ...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=reset&t=${Date.now()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=reset&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
 
         if (result.status === "success") {
-          alert("✅ รีเซ็ตระบบสำเร็จ! ช่องการเลือกชุมนุมใน Google Sheets ถูกเคลียร์ว่างหมดแล้วพร้อมเริ่มปีศึกษาใหม่ครับ");
+          alert("✅ รีเซ็ตระบบสำเร็จ! เคลียร์ข้อมูล Google Sheets เรียบร้อยแล้วครับ");
           document.getElementById('reset-confirm-text').value = "";
           isSystemOpen = false;
           toggleSystem();
@@ -1122,7 +1129,7 @@
           alert("❌ เกิดข้อผิดพลาดจาก Google Sheets: " + result.message);
         }
       } catch (error) {
-        alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้ กรุณาเช็คการ Deploy Apps Script");
+        alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้");
       } finally {
         btnReset.disabled = false;
         btnReset.innerText = "🚨 ยืนยันล้างข้อมูลและรีเซ็ตระบบ 🚨";
