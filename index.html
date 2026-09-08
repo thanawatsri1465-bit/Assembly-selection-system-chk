@@ -7,36 +7,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
-    /* 🚫 ซ่อนป้าย Netlify และองค์ประกอบภายนอก */
-    #netlify-badge, [data-netlify-badge], [data-netlify-deploy-id], .netlify-badge, 
-    iframe#netlify-identity-widget, iframe[src*="netlify"], div[class*="netlify"], 
-    [class*="feedback"], [class*="badge"], [id*="badge"], [class*="drawer"] {
-      display: none !important; 
-      visibility: hidden !important; 
-      opacity: 0 !important; 
-      pointer-events: none !important;
+    #netlify-badge, [data-netlify-badge], [data-netlify-deploy-id], .netlify-badge, iframe#netlify-identity-widget, iframe[src*="netlify"], div[class*="netlify"], [class*="feedback"], [class*="badge"], [id*="badge"], [class*="drawer"] {
+      display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
 
     :root {
       --font-main: 'Sarabun', sans-serif;
-      --font-heading: 'Kanit', sans-serif;
       --bg-light: #fdf4ff;
       --text-dark: #4a044e;
       --primary-purple: #86198f;
       --primary-pink: #ec4899;
-      --border-purple: #f5d0fe;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
-    /* Header & Layout */
-    .top-header { background: white; border-bottom: 1px solid var(--border-purple); padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .top-header { background: white; border-bottom: 1px solid #f5d0fe; padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .top-header img { height: 40px; width: auto; object-fit: contain; }
-    .top-header h2 { font-family: var(--font-heading); color: var(--primary-purple); font-size: 18px; }
+    .top-header h2 { font-family: 'Kanit', sans-serif; color: var(--primary-purple); font-size: 18px; }
 
     .page-view { display: none; } 
-    .page-view.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+    .page-view.active { display: block; animation: fadeIn 0.4s; }
 
     #login-view.active { display: flex !important; align-items: center; justify-content: center; min-height: 100vh; width: 100%; background: linear-gradient(135deg, #a21caf 0%, #ec4899 100%); }
 
@@ -45,27 +36,24 @@
     .main-container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
     .hero-section { background: linear-gradient(135deg, #86198f 0%, #d946ef 100%); padding: 45px 20px; border-radius: 20px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(217, 70, 239, 0.2); }
 
-    /* Components & Buttons */
-    .btn-primary { background: white; color: #a21caf; border: none; padding: 12px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
-    .btn-primary:hover { transform: translateY(-2px); }
-    
-    .search-filter-box { background: white; padding: 15px 20px; border-radius: 15px; border: 1px solid var(--border-purple); margin-bottom: 25px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .btn-primary { background: white; color: #a21caf; border: none; padding: 12px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+    .search-filter-box { background: white; padding: 15px 20px; border-radius: 15px; border: 1px solid #f5d0fe; margin-bottom: 25px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
     .search-input-wrap { flex: 1; min-width: 250px; position: relative; }
     .search-input-wrap input { width: 100%; padding: 10px 15px 10px 35px; border: 1px solid #fbcfe8; border-radius: 8px; outline: none; font-family: var(--font-main); font-size: 14px; }
     .search-input-wrap::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.5; }
     .filter-checkbox-wrap { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #701a75; font-weight: 500; cursor: pointer; }
     .filter-checkbox-wrap input { width: 18px; height: 18px; accent-color: var(--primary-pink); cursor: pointer; }
 
-    /* Progress & Cards */
     .progress-container { margin: 10px 0 12px 0; }
     .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
     .progress-bar-bg { width: 100%; height: 8px; background: #f3e8ff; border-radius: 10px; overflow: hidden; }
     .progress-bar-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease, background-color 0.4s ease; }
 
     .clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-    .club-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid var(--border-purple); display: flex; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .club-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #f5d0fe; display: flex; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
     .club-card.selected-card { border: 2px solid #ec4899; background: #fdf2f8; }
-    .club-icon { font-size: 30px; background: #fae8ff; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; }
+    .club-icon { font-size: 30px; background: #fae8ff; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0;}
 
     .btn-join { background: #d946ef; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; }
     .btn-join:disabled { background: #f3d7fb; color: #a21caf; cursor: not-allowed; }
@@ -74,31 +62,29 @@
     .alert-banner { background: #fce7f3; color: #be185d; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; border: 1px solid #fbcfe8; }
     .alert-banner.show { display: block; }
 
-    .student-banner { background: #fae8ff; color: #701a75; padding: 20px; border-radius: 15px; margin-bottom: 25px; display: none; justify-content: space-between; align-items: center; border: 1px solid var(--border-purple); }
+    .student-banner { background: #fae8ff; color: #701a75; padding: 20px; border-radius: 15px; margin-bottom: 25px; display: none; justify-content: space-between; align-items: center; border: 1px solid #f5d0fe; }
     .student-banner.show { display: flex; }
 
     .my-club-box { background: #ec4899; color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold; display: inline-block; margin-top: 5px; }
-    .lock-badge { background: #be185d; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; vertical-align: middle; }
+    .lock-badge { background: #be185d; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; vertical-align: middle;}
 
     .btn-logout-pink { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
 
-    /* Login Form */
     .login-wrapper { width: 100%; max-width: 400px; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(134, 25, 143, 0.2); text-align: center; position: relative; }
     .login-logo { height: 70px; width: auto; margin-bottom: 10px; object-fit: contain; }
-    .login-wrapper input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid var(--border-purple); border-radius: 10px; font-family: var(--font-main); outline: none; font-size: 14px; }
+    .login-wrapper input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid #f5d0fe; border-radius: 10px; font-family: var(--font-main); outline: none; font-size: 14px;}
     .login-wrapper input:focus { border-color: #d946ef; }
-    .login-wrapper button { width: 100%; padding: 14px; background: linear-gradient(135deg, #a21caf, #ec4899); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; }
+    .login-wrapper button { width: 100%; padding: 14px; background: linear-gradient(135deg, #a21caf, #ec4899); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px;}
 
-    /* Admin Panel */
-    .admin-header { background: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-purple); }
+    .admin-header { background: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5d0fe; }
     .admin-layout { display: flex; min-height: calc(100vh - 75px); }
-    .admin-sidebar { width: 250px; background: #ffffff; border-right: 1px solid var(--border-purple); display: flex; flex-direction: column; padding-top: 15px; }
+    .admin-sidebar { width: 250px; background: #ffffff; border-right: 1px solid #f5d0fe; display: flex; flex-direction: column; padding-top: 15px; }
 
-    .tab-btn { padding: 16px 24px; border: none; background: none; cursor: pointer; font-family: var(--font-heading); font-size: 15px; color: #701a75; text-align: left; border-left: 4px solid transparent; }
+    .tab-btn { padding: 16px 24px; border: none; background: none; cursor: pointer; font-family: 'Kanit'; font-size: 15px; color: #701a75; text-align: left; border-left: 4px solid transparent; }
     .tab-btn.active { color: var(--primary-purple); border-left: 4px solid var(--primary-pink); background: #fdf4ff; font-weight: 600; }
 
     .admin-content { flex: 1; padding: 30px 40px; background-color: var(--bg-light); }
-    .admin-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid var(--border-purple); margin-bottom: 20px; }
+    .admin-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #f5d0fe; margin-bottom: 20px; }
 
     .toggle-btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; }
     .toggle-close { background: #be185d; }
@@ -107,34 +93,24 @@
     .form-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
     .form-group input, .form-group select { padding: 10px; border: 1px solid #fbcfe8; border-radius: 8px; font-family: var(--font-main); outline: none; }
 
-    /* Tables & Responsive overflow */
-    .table-wrapper { overflow-x: auto; width: 100%; }
     table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-purple); font-size: 14px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f5d0fe; font-size: 14px; }
     th { background: #fdf4ff; color: #701a75; font-weight: 600; }
 
     .grade-badge { background: #fce7f3; color: #be185d; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #fbcfe8; display: inline-block; }
     .room-badge { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #c7d2fe; display: inline-block; margin-left: 4px; }
 
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-    .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-purple); border-left: 5px solid var(--primary-purple); }
-    .stat-card h4 { font-size: 13px; color: #701a75; font-family: var(--font-heading); margin-bottom: 5px; }
+    .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #f5d0fe; border-left: 5px solid var(--primary-purple); }
+    .stat-card h4 { font-size: 13px; color: #701a75; font-family: 'Kanit'; margin-bottom: 5px; }
     .stat-card .number { font-size: 26px; font-weight: bold; color: var(--primary-pink); }
     
     .btn-export { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: var(--font-main); }
     
-    .filter-bar { display: flex; gap: 15px; flex-wrap: wrap; background: #fdf4ff; padding: 15px; border-radius: 10px; border: 1px solid var(--border-purple); margin-bottom: 15px; }
+    .filter-bar { display: flex; gap: 15px; flex-wrap: wrap; background: #fdf4ff; padding: 15px; border-radius: 10px; border: 1px solid #f5d0fe; margin-bottom: 15px; }
     .filter-item { flex: 1; min-width: 180px; }
     .filter-item label { display: block; font-size: 12px; font-weight: bold; color: #701a75; margin-bottom: 5px; }
     .filter-item select, .filter-item input { width: 100%; padding: 8px 12px; border: 1px solid #fbcfe8; border-radius: 6px; outline: none; font-family: var(--font-main); }
-
-    @media (max-width: 768px) {
-      .admin-layout { flex-direction: column; }
-      .admin-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-purple); flex-direction: row; overflow-x: auto; }
-      .tab-btn { flex: 1; text-align: center; border-left: none; border-bottom: 4px solid transparent; padding: 12px; }
-      .tab-btn.active { border-left: none; border-bottom: 4px solid var(--primary-pink); }
-      .admin-content { padding: 15px; }
-    }
   </style>
 </head>
 <body>
@@ -144,7 +120,6 @@
     <h2>ระบบลงทะเบียนกิจกรรมชุมนุม - โรงเรียนโชคชัยสามัคคี</h2>
   </div>
 
-  <!-- Dashboard View -->
   <div id="dashboard-view" class="page-view active">
     <div class="main-container">
       <div id="system-alert" class="alert-banner">🔒 ขณะนี้ระบบ "ปิดระบบรับสมัครชั่วคราว" นักเรียนสามารถตรวจสอบรายชื่อได้ แต่ไม่สามารถเลือกชุมนุมได้</div>
@@ -181,7 +156,6 @@
     </div>
   </div>
 
-  <!-- My Club View -->
   <div id="myclub-view" class="page-view">
     <div class="main-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -196,29 +170,26 @@
       </div>
 
       <div class="admin-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <h3 style="font-family:'Kanit'; color:#701a75;">👥 รายชื่อเพื่อนนักเรียนที่ร่วมชุมนุมเดียวกัน</h3>
           <button class="btn-export" onclick="exportMyClubToExcel()">📥 ดาวน์โหลดไฟล์ Excel ชุมนุมนี้</button>
         </div>
         <p style="font-size:13px; color:gray; margin-bottom:15px;">รายชื่อผู้สมัครดึงข้อมูลสดจากระบบ Google Sheets โรงเรียนโชคชัยสามัคคี</p>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:10%">เลขที่</th>
-                <th style="width:25%">รหัสนักเรียน</th>
-                <th style="width:45%">ชื่อ - นามสกุล</th>
-                <th style="width:20%">ชั้นเรียน</th>
-              </tr>
-            </thead>
-            <tbody id="myclub-members-table"></tbody>
-          </table>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:10%">เลขที่</th>
+              <th style="width:25%">รหัสนักเรียน</th>
+              <th style="width:45%">ชื่อ - นามสกุล</th>
+              <th style="width:20%">ชั้นเรียน</th>
+            </tr>
+          </thead>
+          <tbody id="myclub-members-table"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <!-- Login View -->
   <div id="login-view" class="page-view">
     <div class="login-wrapper">
       <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-login" class="login-logo" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
@@ -233,7 +204,6 @@
     </div>
   </div>
 
-  <!-- Admin View -->
   <div id="admin-view" class="page-view">
     <header class="admin-header">
       <h2 style="font-family:'Kanit'; color:var(--primary-purple);">⚙️ แผงควบคุมระบบแอดมิน - โรงเรียนโชคชัยสามัคคี</h2>
@@ -264,7 +234,7 @@
           </div>
         </div>
 
-        <div class="admin-card" style="display:flex; justify-content:space-between; align-items:center; border-left:5px solid var(--primary-pink); flex-wrap:wrap; gap:10px;">
+        <div class="admin-card" style="display:flex; justify-content:space-between; align-items:center; border-left:5px solid var(--primary-pink);">
           <div>
             <h3 style="font-size:16px; font-family:'Kanit'; color:#701a75;">สถานะระบบการลงทะเบียนหน้าบ้าน</h3>
             <p id="sys-status-text" style="color:#10b981; font-weight:bold;">🟢 เปิดรับสมัครอยู่ (นักเรียนเลือกชุมนุมได้ปกติ)</p>
@@ -272,7 +242,6 @@
           <button id="btn-sys-toggle" class="toggle-btn toggle-close" onclick="toggleSystem()">🔒 ปิดระบบชั่วคราว</button>
         </div>
 
-        <!-- Tab 1: Clubs -->
         <div id="tab-clubs" class="admin-tab-section">
           <div class="admin-card">
             <h3 id="form-mode" style="margin-bottom:15px; color:var(--primary-purple);">➕ เพิ่มกิจกรรมชุมนุมใหม่</h3>
@@ -301,28 +270,24 @@
               </select>
             </div>
             <div class="form-group">
-              <input type="text" id="c-desc" placeholder="คำอธิบายรายละเอียดชุมนุม..." style="grid-column: 1 / -1;">
+              <input type="text" id="c-desc" placeholder="คำอธิบายรายละเอียดชุมนุม..." style="grid-column: span 3;">
             </div>
             <div style="text-align:right; margin-top: 10px;">
               <button id="btn-cancel" style="display:none; padding:10px 20px; margin-right:10px; cursor:pointer;" onclick="clearForm()">ยกเลิก</button>
               <button onclick="saveClub()" style="background:var(--primary-purple); color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">บันทึกข้อมูลชุมนุม</button>
             </div>
-            
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr><th>ไอคอน</th><th>ชื่อชุมนุม</th><th>ครูที่ปรึกษา</th><th>ระดับชั้น/ห้องที่รับ</th><th>รับสูงสุด</th><th>สิทธิ์ควบคุม</th></tr>
-                </thead>
-                <tbody id="admin-table"></tbody>
-              </table>
-            </div>
+            <table>
+              <thead>
+                <tr><th>ไอคอน</th><th>ชื่อชุมนุม</th><th>ครูที่ปรึกษา</th><th>ระดับชั้น/ห้องที่รับ</th><th>รับสูงสุด</th><th>สิทธิ์ควบคุม</th></tr>
+              </thead>
+              <tbody id="admin-table"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Tab 2: Reports -->
         <div id="tab-reports" class="admin-tab-section" style="display:none;">
           <div class="admin-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
               <h3 style="color:var(--primary-purple); font-family:'Kanit';">📊 รายชื่อนักเรียนและส่งออกข้อมูลไฟล์ Excel/CSV</h3>
               <button class="btn-export" onclick="exportAllReportToExcel()">📥 ดาวน์โหลดไฟล์ Excel (ตามตัวกรอง)</button>
             </div>
@@ -350,45 +315,39 @@
               <span id="report-count-badge" style="font-size:13px; font-weight:bold; color:#701a75;">พบข้อมูล: 0 คน</span>
             </div>
 
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:10%">เลขที่</th>
-                    <th style="width:15%">รหัสนักเรียน</th>
-                    <th style="width:30%">ชื่อ - นามสกุล</th>
-                    <th style="width:15%">ชั้นเรียน</th>
-                    <th style="width:30%">ชุมนุมที่สังกัด</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-report-table"></tbody>
-              </table>
-            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:10%">เลขที่</th>
+                  <th style="width:15%">รหัสนักเรียน</th>
+                  <th style="width:30%">ชื่อ - นามสกุล</th>
+                  <th style="width:15%">ชั้นเรียน</th>
+                  <th style="width:30%">ชุมนุมที่สังกัด</th>
+                </tr>
+              </thead>
+              <tbody id="admin-report-table"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Tab 3: Teachers Summary -->
         <div id="tab-teachers" class="admin-tab-section" style="display:none;">
           <div class="admin-card">
             <h3 style="margin-bottom:15px; color:var(--primary-purple);">👩‍🏫 รายชื่อคุณครูและชุมนุมที่รับผิดชอบดูแล</h3>
             <p style="font-size:13px; color:gray; margin-bottom:15px;">แสดงข้อมูลคุณครูผู้ดูแล ชุมนุมที่จัดตั้งขึ้น และระดับชั้น/ห้องเรียนที่อนุญาตให้เปิดรับสมัคร</p>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:5%">ลำดับ</th>
-                    <th style="width:25%">ชื่อคุณครูผู้ดูแลชุมนุม</th>
-                    <th style="width:30%">ชุมนุมที่รับผิดชอบ</th>
-                    <th style="width:40%">ระดับชั้น / ห้องที่อนุญาต</th>
-                  </tr>
-                </thead>
-                <tbody id="teacher-summary-table"></tbody>
-              </table>
-            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:5%">ลำดับ</th>
+                  <th style="width:25%">ชื่อคุณครูผู้ดูแลชุมนุม</th>
+                  <th style="width:30%">ชุมนุมที่รับผิดชอบ</th>
+                  <th style="width:40%">ระดับชั้น / ห้องที่อนุญาต</th>
+                </tr>
+              </thead>
+              <tbody id="teacher-summary-table"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Tab 4: Reset System -->
         <div id="tab-reset" class="admin-tab-section" style="display:none;">
           <div class="admin-card" style="border-left: 5px solid #ef4444;">
             <h3 style="margin-bottom:15px; color:#ef4444; font-family:'Kanit';">🔄 รีเซ็ตระบบเพื่อใช้ในปีการศึกษาถัดไป</h3>
@@ -414,24 +373,19 @@
 
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqil_KlIEj14N_d_kSTv7QaWKSh6x-hPkRm3pOAgYekiYMn-WtbfDw7-_nfePX3gPtKg/exec"; 
+    // ⚠️ นำ URL จากการ Deploy Apps Script ล่าสุดมาวางตรงนี้
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwg8pHqCk2dapp1Ku3l9lETTBONJD98Bzb45Y0fJ-XZhhRGeboDyvUvHDAplFOLE18pkw/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
     let currentClubMembers = [];
     let allRawStudentsData = [];
-    let clubCountsMap = {}; 
+    let clubCountsMap = {};
 
-    const defaultClubs = [
-      { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
-      { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
-    ];
-
-    let clubsDb = defaultClubs;
+    // 🟢 แก้ไข: ใช้ตัวแปรอาร์เรย์ว่างเพื่อโหลดข้อมูลกลางจาก Google Sheets ร่วมกันทุกเครื่อง
+    let clubsDb = [];
 
     window.onload = () => { 
-      localStorage.removeItem('clubsDb');
-
       document.getElementById('school-logo-top').src = LOGO_URL;
       document.getElementById('school-logo-login').src = LOGO_URL;
 
@@ -442,20 +396,51 @@
       renderAdminTable(); 
       renderTeacherSummary();
       updateDashboardStats();
+
+      // 🚀 1. เช็กสถานะการ เปิด/ปิด ระบบแบบด่วนทุกๆ 1.5 วินาที
+      setInterval(checkSystemStatusFast, 1500);
+
+      // 🚀 2. ดึงจำนวนคนที่สมัครและรายชื่อชุมนุมทุกๆ 5 วินาที
+      setInterval(fetchRealtimeCounts, 5000);
     };
+
+    // ⚡ ฟังก์ชันเช็กเฉพาะสถานะ เปิด/ปิด ระบบ
+    async function checkSystemStatusFast() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getSystemStatus&_r=${Math.random()}`, {
+          cache: 'no-store'
+        });
+        const result = await response.json();
+        
+        if (result.status === "success" && typeof result.isSystemOpen !== "undefined") {
+          if (isSystemOpen !== result.isSystemOpen) {
+            isSystemOpen = result.isSystemOpen;
+            updateSystemUI();
+            renderClubs();
+          }
+        }
+      } catch(e) {
+        console.log("Status check error", e);
+      }
+    }
 
     async function fetchRealtimeCounts() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, {
+          cache: 'no-store'
+        });
         const result = await response.json();
-        
-        if (result.clubs && Array.isArray(result.clubs)) {
-          clubsDb = result.clubs;
-        }
 
         if (typeof result.isSystemOpen !== "undefined") {
-          isSystemOpen = result.isSystemOpen;
-          updateSystemUI();
+          if (isSystemOpen !== result.isSystemOpen) {
+            isSystemOpen = result.isSystemOpen;
+            updateSystemUI();
+          }
+        }
+
+        // 🟢 ดึงข้อมูลชุมนุมจาก Google Sheets ให้ใช้ข้อมูลชุดเดียวกันทุกเครื่อง
+        if (result.clubs && Array.isArray(result.clubs)) {
+          clubsDb = result.clubs;
         }
 
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -469,7 +454,7 @@
           });
         }
       } catch(e) {
-        console.warn("Could not load realtime counts from Google Sheets API");
+        console.log("Could not load realtime counts");
       } finally {
         renderClubs();
         renderAdminTable();
@@ -478,34 +463,14 @@
       }
     }
 
-    function syncClubsToSheet() {
-      const params = new URLSearchParams();
-      params.append('action', 'saveClubs');
-      params.append('clubs', JSON.stringify(clubsDb));
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      }).catch(e => console.error("Error saving clubs:", e));
-    }
-
     function toggleSystem() {
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
       renderClubs();
       
-      const params = new URLSearchParams();
-      params.append('action', 'toggleSystem');
-      params.append('isOpen', isSystemOpen);
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      }).catch(e => console.error("Error toggling system:", e));
+      const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&_r=${Math.random()}`;
+      fetch(url, { method: 'POST', mode: 'no-cors' })
+        .catch(e => console.error(e));
     }
 
     function updateRoomDropdownOptions(selectedRoomValue = "") {
@@ -556,8 +521,17 @@
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
+
+      if (valStr === "" || valStr === "null" || valStr === "undefined" || valStr === "0") {
+        return "";
+      }
+
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === valStr || c.name === valStr);
-      return matchClub ? `${matchClub.icon} ${matchClub.name}` : valStr;
+      if(matchClub) {
+        return `${matchClub.icon} ${matchClub.name}`;
+      }
+
+      return valStr;
     }
 
     async function login(e) {
@@ -577,21 +551,15 @@
       submitBtn.innerText = "กำลังตรวจสอบข้อมูล...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&t=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
 
         if (result.status === "success" && result.role === "student") {
           currentUser = result.data;
           alert(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับคุณ ${currentUser.name}`);
           
-          let studentClub = getClubDisplayName(currentUser.club);
-          if(studentClub !== "") {
-            currentUser.club = studentClub; 
-            switchPage('myclub-view');
-          } else {
-            currentUser.club = ""; 
-            switchPage('dashboard');
-          }
+          currentUser.club = getClubDisplayName(currentUser.club);
+          switchPage('dashboard');
         } else {
           alert(result.message || "ไม่พบรหัสผู้ใช้งานนี้ในระบบ");
         }
@@ -615,6 +583,7 @@
       if (targetRoomRule && targetRoomRule.trim() !== "") {
         const allowedRooms = targetRoomRule.split(',').map(r => r.trim().toLowerCase());
         const isMatch = allowedRooms.some(r => cls === r || cls === `ม.${r}` || cls === `ม${r}`);
+        
         if (!isMatch) {
           return { pass: false, reason: `ชุมนุมนี้เปิดรับเฉพาะห้อง: ${targetRoomRule} เท่านั้น (ห้องของคุณคือ ${studentClass})` };
         }
@@ -661,7 +630,7 @@
       btnEl.innerText = "กำลังบันทึก...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}`);
+        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
 
         if(result.status === "success") {
@@ -684,6 +653,12 @@
       const titleEl = document.getElementById('myclub-title');
       const teacherEl = document.getElementById('myclub-teacher');
       let studentClub = getClubDisplayName(currentUser.club);
+
+      if (!studentClub || studentClub === "") {
+        switchPage('dashboard');
+        return;
+      }
+
       titleEl.innerText = `🎯 ชุมนุมของคุณ: ${studentClub}`;
       
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === studentClub);
@@ -693,11 +668,15 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">กำลังโหลดรายชื่อเพื่อนร่วมชุมนุมจาก Google Sheet...</td></tr>`;
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
         
         if (result.status === "success") {
-          currentClubMembers = result.data.filter(st => getClubDisplayName(st.club) === studentClub);
+          currentClubMembers = result.data.filter(st => {
+            const stClub = getClubDisplayName(st.club);
+            return stClub !== "" && stClub === studentClub;
+          });
+
           if (currentClubMembers.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">ยังไม่มีนักเรียนคนอื่นลงทะเบียนในชุมนุมนี้</td></tr>`;
             return;
@@ -746,7 +725,7 @@
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมดจาก Google Sheets...</td></tr>';
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
         
         if(result.status === "success") {
@@ -792,9 +771,10 @@
 
       currentFilteredDataForExport = allRawStudentsData.filter(st => {
         const stClubName = getClubDisplayName(st.club);
+        
         let matchClass = (selectedClass === "ALL" || (st.className || "").toString().trim() === selectedClass.trim());
-        let matchClub = true;
 
+        let matchClub = true;
         if (selectedClub === "NONE") matchClub = (!stClubName || stClubName.trim() === "");
         else if (selectedClub !== "ALL") matchClub = (stClubName === selectedClub);
 
@@ -886,6 +866,7 @@
       let filteredClubs = clubsDb.filter(c => {
         const fullName = `${c.icon} ${c.name}`.toLowerCase();
         const teacherName = (c.teacher || "").toLowerCase();
+        
         const matchSearch = !searchText || fullName.includes(searchText) || teacherName.includes(searchText);
 
         let matchEligible = true;
@@ -970,7 +951,7 @@
       document.getElementById('stat-total-seats').innerText = `${totalSeats} ที่นั่ง`;
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
         
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -1002,7 +983,8 @@
       }
     }
 
-    function saveClub() {
+    // 🟢 แก้ไข: ส่งข้อมูลชุมนุมไปบันทึกที่ Google Apps Script
+    async function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
       const name = document.getElementById('c-name').value;
@@ -1014,21 +996,21 @@
 
       if(!name || !teacher || !max) { alert('⚠️ กรุณากรอกข้อมูลหลักให้ครบถ้วนครับ'); return; }
 
-      if(idInput) {
-        const index = clubsDb.findIndex(c => c.id == idInput);
-        if(index > -1) clubsDb[index] = { id: parseInt(idInput), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
-      } else {
-        const newId = clubsDb.length > 0 ? Math.max(...clubsDb.map(c => c.id)) + 1 : 1;
-        clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
-      }
+      const clubData = { id: idInput || Date.now(), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
 
-      syncClubsToSheet();
-      clearForm();
-      renderAdminTable();
-      renderTeacherSummary();
-      renderClubs(); 
-      updateDashboardStats();
-      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
+      try {
+        await fetch(`${SCRIPT_URL}?action=saveClubData`, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(clubData)
+        });
+        alert('✅ บันทึกข้อมูลชุมนุมไปยังฐานข้อมูลเรียบร้อยแล้ว');
+        clearForm();
+        fetchRealtimeCounts();
+      } catch(e) {
+        alert('❌ ไม่สามารถบันทึกข้อมูลไปยัง Google Sheets ได้');
+      }
     }
 
     function clearForm() {
@@ -1060,14 +1042,19 @@
       }
     }
 
-    function deleteClub(id) {
-      if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
-        clubsDb = clubsDb.filter(c => c.id != id);
-        syncClubsToSheet();
-        renderAdminTable();
-        renderTeacherSummary();
-        renderClubs(); 
-        updateDashboardStats();
+    // 🟢 แก้ไข: ส่งคำสั่งลบชุมนุมไปยัง Google Apps Script
+    async function deleteClub(id) {
+      if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากฐานข้อมูลใช่หรือไม่?')) {
+        try {
+          await fetch(`${SCRIPT_URL}?action=deleteClubData&id=${id}`, {
+            method: 'POST',
+            mode: 'no-cors'
+          });
+          alert('🗑️ ลบข้อมูลชุมนุมเรียบร้อยแล้ว');
+          fetchRealtimeCounts();
+        } catch(e) {
+          alert('❌ ไม่สามารถส่งคำสั่งลบไปยัง Google Sheets ได้');
+        }
       }
     }
 
@@ -1131,11 +1118,11 @@
       btnReset.innerText = "กำลังสั่งล้างฐานข้อมูลระบบ...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=reset`);
+        const response = await fetch(`${SCRIPT_URL}?action=reset&_r=${Math.random()}`, { cache: 'no-store' });
         const result = await response.json();
 
         if (result.status === "success") {
-          alert("✅ รีเซ็ตระบบสำเร็จ! ช่องการเลือกชุมนุมใน Google Sheets ถูกเคลียร์ว่างหมดแล้วพร้อมเริ่มปีศึกษาใหม่ครับ");
+          alert("✅ รีเซ็ตระบบสำเร็จ! เคลียร์ข้อมูล Google Sheets เรียบร้อยแล้วครับ");
           document.getElementById('reset-confirm-text').value = "";
           isSystemOpen = false;
           toggleSystem();
@@ -1144,7 +1131,7 @@
           alert("❌ เกิดข้อผิดพลาดจาก Google Sheets: " + result.message);
         }
       } catch (error) {
-        alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้ กรุณาเช็คการ Deploy Apps Script");
+        alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้");
       } finally {
         btnReset.disabled = false;
         btnReset.innerText = "🚨 ยืนยันล้างข้อมูลและรีเซ็ตระบบ 🚨";
