@@ -407,7 +407,6 @@
       updateDashboardStats();
     };
 
-    // ✅ ดึงข้อมูลสดจาก Google Sheet ถาวร
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
@@ -443,13 +442,11 @@
       }
     }
 
-    // ✅ ส่งคำสั่งบันทึกรายการชุมนุมไปยัง Google Sheets
     function syncClubsToSheet() {
       const url = `${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}`;
       fetch(url, { method: 'POST', mode: 'no-cors' }).catch(e => console.error(e));
     }
 
-    // ✅ ส่งคำสั่งสลับเปิด/ปิดระบบไปยัง Google Sheets
     function toggleSystem() {
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
@@ -504,10 +501,15 @@
       }
     }
 
+    // 🛠️ แก้ไขตัวกรองชื่อชุมนุมให้กระชับ ป้องกันการคืนค่าเป็นตัวเลขหลุดออกมา
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
-      
+
+      if (valStr === "" || valStr === "null" || valStr === "undefined" || valStr === "0") {
+        return "";
+      }
+
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === valStr || c.name === valStr);
       if(matchClub) {
         return `${matchClub.icon} ${matchClub.name}`;
@@ -516,6 +518,7 @@
       return valStr;
     }
 
+    // 🛠️ แก้ไขระบบ Login: บังคับให้เด้งไปหน้า Dashboard (เลือกชุมนุม) เสมอ!
     async function login(e) {
       e.preventDefault();
       const studentId = document.getElementById('log-id').value.trim();
@@ -540,15 +543,10 @@
           currentUser = result.data;
           alert(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับคุณ ${currentUser.name}`);
           
-          let studentClub = getClubDisplayName(currentUser.club);
+          currentUser.club = getClubDisplayName(currentUser.club);
 
-          if(studentClub !== "") {
-            currentUser.club = studentClub; 
-            switchPage('myclub-view');
-          } else {
-            currentUser.club = ""; 
-            switchPage('dashboard');
-          }
+          // 🎯 บังคับเด้งกลับไปหน้า dashboard เพื่อให้เลือกลงทะเบียนชุมนุมก่อนเสมอ
+          switchPage('dashboard');
         } else {
           alert(result.message || "ไม่พบรหัสผู้ใช้งานนี้ในระบบ");
         }
@@ -597,6 +595,7 @@
       return { pass: true };
     }
 
+    // 🛠️ แก้ไขเมื่อกดกดเลือกลงทะเบียนสำเร็จ -> ถึงเด้งไปหน้า myclub-view
     async function joinClub(clubName, targetGradeRule, targetRoomRule, btnEl) {
       let studentClub = currentUser && getClubDisplayName(currentUser.club);
       
@@ -625,6 +624,8 @@
         if(result.status === "success") {
           currentUser.club = clubName;
           alert(`🎉 ลงทะเบียนสำเร็จ! ระบบบันทึกข้อมูลแล้ว`);
+          
+          // 🎯 เลือกลงทะเบียนเสร็จแล้ว เด้งไปหน้าชุมนุมของฉันทันที!
           switchPage('myclub-view'); 
         } else {
           alert("บันทึกไม่สำเร็จ: " + result.message);
@@ -637,11 +638,18 @@
       }
     }
 
+    // 🛠️ แก้ไขการแสดงรายชื่อเพื่อนในชุมนุม: ป้องกันการดึงคนยังไม่ได้เลือกมารวมกัน
     async function renderMyClubMembers() {
       if(!currentUser || currentUser === 'admin') return;
       const titleEl = document.getElementById('myclub-title');
       const teacherEl = document.getElementById('myclub-teacher');
       let studentClub = getClubDisplayName(currentUser.club);
+
+      if (!studentClub || studentClub === "") {
+        switchPage('dashboard');
+        return;
+      }
+
       titleEl.innerText = `🎯 ชุมนุมของคุณ: ${studentClub}`;
       
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === studentClub);
@@ -655,7 +663,12 @@
         const result = await response.json();
         
         if (result.status === "success") {
-          currentClubMembers = result.data.filter(st => getClubDisplayName(st.club) === studentClub);
+          // 🎯 ดึงเฉพาะคนที่มีชื่อชุมนุมตรงกัน และ ไม่ใช่ค่าว่าง
+          currentClubMembers = result.data.filter(st => {
+            const stClub = getClubDisplayName(st.club);
+            return stClub !== "" && stClub === studentClub;
+          });
+
           if (currentClubMembers.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">ยังไม่มีนักเรียนคนอื่นลงทะเบียนในชุมนุมนี้</td></tr>`;
             return;
