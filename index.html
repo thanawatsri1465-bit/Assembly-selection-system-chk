@@ -18,6 +18,19 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
+    /* 🚫 ซ่อน Netlify Badge ทุกรูปแบบ */
+    #netlify-badge, 
+    [data-netlify-badge],
+    [data-netlify-deploy-id],
+    .netlify-badge,
+    iframe[src*="netlify"],
+    div[class*="netlify"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
     .top-header {
       background: white;
       border-bottom: 1px solid #f5d0fe;
@@ -295,7 +308,7 @@
 
   <div id="login-view" class="page-view">
     <div class="login-wrapper">
-      <img src="https://via.placeholder.com/100x100?text=LOGO" id="school-logo-login" class="login-logo" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
+      <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-login" class="login-logo" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
       <p style="font-size:12px; color:#be185d; font-weight:bold; margin-bottom:5px;">โรงเรียนโชคชัยสามัคคี</p>
       <h2 style="margin-bottom:10px; color:#701a75; font-family:'Kanit';">เข้าสู่ระบบ</h2>
       <p style="font-size:13px; color:gray; margin-bottom:25px;">กรอกรหัสนักเรียนเพื่อเข้าสู่ระบบลงทะเบียน</p>
@@ -475,28 +488,41 @@
   </div>
 
   <script>
-    // 🔗 เปลี่ยนลิงก์รูปโลโก้โรงเรียนของคุณครูตรงนี้ได้เลยครับ
-    const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg"; // ใส่ URL รูปโลโก้โรงเรียนที่นี่
+    // 🖼️ URL รูปภาพโลโก้โรงเรียน
+    const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
 
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpp-pX1pF8p3vh2DBp0US8Of078NdfM08sZmKGdXeTdy4TdFqoIEOLpPrOzg7DHOqLVA/exec"; 
 
-    let isSystemOpen = true; 
+    // 💾 บันทึกและดึงสถานะ เปิด/ปิด ระบบจาก localStorage
+    let isSystemOpen = localStorage.getItem('isSystemOpen') !== null 
+      ? JSON.parse(localStorage.getItem('isSystemOpen')) 
+      : true;
+
     let currentUser = null;
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
 
-    let clubsDb = [
+    // 💾 บันทึกและดึงข้อมูลชุมนุมจาก localStorage ป้องกันข้อมูลหายเวลารีเฟรช
+    const defaultClubs = [
       { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
       { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
     ];
 
+    let savedClubs = JSON.parse(localStorage.getItem('clubsDb'));
+    let clubsDb = (savedClubs !== null && Array.isArray(savedClubs)) ? savedClubs : defaultClubs;
+
+    function saveClubsToStorage() {
+      localStorage.setItem('clubsDb', JSON.stringify(clubsDb));
+    }
+
     window.onload = () => { 
-      // อัปเดตรูปโลโก้จากตัวแปร LOGO_URL
       document.getElementById('school-logo-top').src = LOGO_URL;
       document.getElementById('school-logo-login').src = LOGO_URL;
 
+      updateSystemUI(); 
       updateRoomDropdownOptions();
+      renderClubs(); 
       fetchRealtimeCounts(); 
       renderAdminTable(); 
       renderTeacherSummary();
@@ -569,17 +595,17 @@
       }
     }
 
+    // ✅ แก้ไขฟังก์ชันนี้: เช็กจากชื่อชุมนุมตรงๆ ป้องกันไม่ให้เลขที่นักเรียนไปตรงกับ ID ชุมนุม
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
       
-      const matchById = clubsDb.find(c => c.id.toString() === valStr);
-      if(matchById) return `${matchById.icon} ${matchById.name}`;
-      
-      const isRealClub = clubsDb.some(c => `${c.icon} ${c.name}` === valStr || c.name === valStr);
-      if(isRealClub) return valStr;
+      const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === valStr || c.name === valStr);
+      if(matchClub) {
+        return `${matchClub.icon} ${matchClub.name}`;
+      }
 
-      return "";
+      return valStr;
     }
 
     async function login(e) {
@@ -1016,8 +1042,16 @@
 
     function toggleSystem() {
       isSystemOpen = !isSystemOpen;
+      localStorage.setItem('isSystemOpen', JSON.stringify(isSystemOpen));
+      
+      updateSystemUI();
+      renderClubs();
+    }
+
+    function updateSystemUI() {
       const stText = document.getElementById('sys-status-text');
       const btn = document.getElementById('btn-sys-toggle');
+      if(!stText || !btn) return;
       
       if(isSystemOpen) {
         stText.innerHTML = "🟢 เปิดรับสมัครอยู่ (นักเรียนเลือกชุมนุมได้ปกติ)"; stText.style.color = "#10b981";
@@ -1026,7 +1060,6 @@
         stText.innerHTML = "🔴 ปิดระบบแล้ว (นักเรียนล็อกอินได้แต่ถูกล็อกปุ่มสมัคร)"; stText.style.color = "#be185d";
         btn.innerText = "🔓 เปิดระบบรับสมัคร"; btn.className = "toggle-btn toggle-open";
       }
-      renderClubs();
     }
 
     function saveClub() {
@@ -1049,12 +1082,13 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
+      saveClubsToStorage(); 
       clearForm();
       renderAdminTable();
       renderTeacherSummary();
       renderClubs(); 
       updateDashboardStats();
-      alert('✅ บันทึกข้อมูลชุมนุมและอัปเดตเรียบร้อยแล้ว');
+      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
     }
 
     function clearForm() {
@@ -1089,6 +1123,7 @@
     function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
+        saveClubsToStorage(); 
         renderAdminTable();
         renderTeacherSummary();
         renderClubs(); 
@@ -1163,7 +1198,8 @@
           alert("✅ รีเซ็ตระบบสำเร็จ! ช่องการเลือกชุมนุมใน Google Sheets ถูกเคลียร์ว่างหมดแล้วพร้อมเริ่มปีศึกษาใหม่ครับ");
           document.getElementById('reset-confirm-text').value = "";
           isSystemOpen = false;
-          toggleSystem(); 
+          localStorage.setItem('isSystemOpen', 'false');
+          updateSystemUI(); 
           logout(); 
         } else {
           alert("❌ เกิดข้อผิดพลาดจาก Google Sheets: " + result.message);
