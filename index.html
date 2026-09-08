@@ -110,7 +110,7 @@
     .btn-join:hover { opacity: 0.9; }
     .btn-joined { background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; }
 
-    /* Login Box */
+    /* Login Box (ตรงตามรูปต้นแบบ) */
     .login-wrapper {
       min-height: calc(100vh - 120px); display: flex;
       justify-content: center; align-items: center; background: var(--primary-gradient);
@@ -159,14 +159,14 @@
 </head>
 <body>
 
-  <!-- Full Page Spinner Loader -->
+  <!-- Spinner Loader -->
   <div id="full-page-loader">
     <div class="spinner"></div>
     <div class="loader-title" id="loader-title">กำลังเชื่อมต่อระบบ...</div>
     <div class="loader-subtitle" id="loader-subtitle">โปรดรอสักครู่ ระบบกำลังโหลดข้อมูล</div>
   </div>
 
-  <!-- Top Header -->
+  <!-- Header -->
   <header class="top-header">
     <div class="header-container">
       <img id="school-logo-top" class="header-logo" src="" alt="Logo">
@@ -176,7 +176,7 @@
 
   <div class="container">
     
-    <!-- หน้าหลัก Dashboard -->
+    <!-- หน้า Dashboard -->
     <div id="dashboard-view" class="page-view active">
       
       <div id="hero-banner" class="hero-purple">
@@ -187,6 +187,7 @@
         </button>
       </div>
 
+      <!-- แถบแสดงสถานะนักเรียนเมื่อเข้าสู่ระบบแล้ว -->
       <div id="student-alert" style="display:none; background:white; padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid #e9d5ff;">
         <span id="st-name" style="font-weight:bold; color:#701a75;"></span>
         <div id="st-club-box" style="margin-top:4px;"></div>
@@ -204,14 +205,11 @@
         </div>
       </div>
 
-      <div class="section-title">
-        📚 รายชื่อกิจกรรมชุมนุมทั้งหมด
-      </div>
-
+      <div class="section-title">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</div>
       <div id="clubs-container" class="clubs-grid"></div>
     </div>
 
-    <!-- หน้าเข้าสู่ระบบ -->
+    <!-- หน้าเข้าสู่ระบบ ( Login สำหรับนักเรียนและ admin ) -->
     <div id="login-view" class="page-view">
       <div class="login-wrapper">
         <div class="login-card">
@@ -230,7 +228,7 @@
       </div>
     </div>
 
-    <!-- หน้าชุมนุมของฉัน -->
+    <!-- หน้าชุมนุมของฉัน (สำหรับนักเรียน) -->
     <div id="myclub-view" class="page-view">
       <div class="table-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -257,7 +255,7 @@
       </div>
     </div>
 
-    <!-- หน้าผู้ดูแลระบบ (Admin) -->
+    <!-- หน้า Admin -->
     <div id="admin-view" class="page-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h3 style="color:#701a75;">⚙️ ระบบบริหารจัดการ (Admin)</h3>
@@ -271,7 +269,6 @@
         <button class="tab-btn" onclick="switchAdminTab('system', this)">ตั้งค่าระบบ</button>
       </div>
 
-      <!-- Tab 1: จัดการชุมนุม -->
       <div id="tab-manage" class="admin-tab-section">
         <div class="form-card">
           <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
@@ -317,7 +314,6 @@
         </div>
       </div>
 
-      <!-- Tab 2: สรุปครูผู้ดูแล -->
       <div id="tab-teachers" class="admin-tab-section" style="display:none;">
         <div class="table-card">
           <h4>สรุปครูผู้ดูแลประจำชุมนุม</h4>
@@ -335,7 +331,6 @@
         </div>
       </div>
 
-      <!-- Tab 3: รายงานนักเรียน -->
       <div id="tab-reports" class="admin-tab-section" style="display:none;">
         <div class="table-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -363,7 +358,6 @@
         </div>
       </div>
 
-      <!-- Tab 4: ตั้งค่าระบบ -->
       <div id="tab-system" class="admin-tab-section" style="display:none;">
         <div class="form-card">
           <h4>สถานะระบบรับสมัคร</h4>
@@ -396,25 +390,18 @@
       const loader = document.getElementById('full-page-loader');
       if (document.getElementById('loader-title')) document.getElementById('loader-title').innerText = title;
       if (document.getElementById('loader-subtitle')) document.getElementById('loader-subtitle').innerText = subtitle;
-      if (loader) {
-        loader.style.display = 'flex'; loader.style.opacity = '1'; loader.style.visibility = 'visible';
-      }
+      if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; loader.style.visibility = 'visible'; }
     }
 
     function hideLoader() {
       const loader = document.getElementById('full-page-loader');
-      if (loader) {
-        loader.style.opacity = '0'; loader.style.visibility = 'hidden';
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
-      }
+      if (loader) { loader.style.opacity = '0'; loader.style.visibility = 'hidden'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
     }
 
     window.onload = async () => { 
       showLoader("กำลังเชื่อมต่อระบบ...", "กำลังดึงข้อมูลกิจกรรมชุมนุมล่าสุดจาก Google Sheets");
-
       if(document.getElementById('school-logo-top')) document.getElementById('school-logo-top').src = LOGO_URL;
       if(document.getElementById('school-logo-login')) document.getElementById('school-logo-login').src = LOGO_URL;
-
       updateSystemUI(); 
       updateRoomDropdownOptions();
       await fetchRealtimeCounts(); 
@@ -452,7 +439,6 @@
       }
     }
 
-    // ⚡ ส่งข้อมูลด้วย GET Request แก้ปัญหา Browser บล็อกบันทึกข้อมูล
     async function syncClubsToSheet() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}&t=${Date.now()}`);
@@ -521,11 +507,12 @@
       return matchClub ? `${matchClub.icon} ${matchClub.name}` : valStr;
     }
 
+    // ฟังก์ชันเข้าสู่ระบบสำหรับนักเรียน และ แอดมิน
     async function login(e) {
       e.preventDefault();
       const studentId = document.getElementById('log-id').value.trim();
 
-      showLoader("กำลังเข้าสู่ระบบ...", "กำลังตรวจสอบสิทธิ์ผู้ใช้");
+      showLoader("กำลังเข้าสู่ระบบ...", "กำลังตรวจสอบสิทธิ์ผู้ใช้กับ Google Sheets");
 
       if(studentId.toLowerCase() === 'admin') {
         currentUser = 'admin';
