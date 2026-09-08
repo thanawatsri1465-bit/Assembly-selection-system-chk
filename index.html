@@ -498,17 +498,12 @@
 
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpp-pX1pF8p3vh2DBp0US8Of078NdfM08sZmKGdXeTdy4TdFqoIEOLpPrOzg7DHOqLVA/exec"; 
 
-    // 💾 บันทึกและดึงสถานะ เปิด/ปิด ระบบจาก localStorage
-    let isSystemOpen = localStorage.getItem('isSystemOpen') !== null 
-      ? JSON.parse(localStorage.getItem('isSystemOpen')) 
-      : true;
-
+    let isSystemOpen = true;
     let currentUser = null;
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
 
-    // 💾 บันทึกและดึงข้อมูลชุมนุมจาก localStorage
     const defaultClubs = [
       { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
       { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
@@ -534,15 +529,22 @@
       updateDashboardStats();
     };
 
+    // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
         const result = await response.json();
         
-        // ถ้าเซิร์ฟเวอร์ส่งชุดชุมนุมมาให้ ให้ใช้จากเซิร์ฟเวอร์
+        // อัปเดตรายการชุมนุมจากฐานข้อมูลกลาง Google Sheets
         if (result.clubs && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
           saveClubsToStorage();
+        }
+
+        // อัปเดตสถานะ เปิด/ปิด ระบบจากฐานข้อมูลกลาง Google Sheets
+        if (typeof result.isSystemOpen !== "undefined") {
+          isSystemOpen = result.isSystemOpen;
+          updateSystemUI();
         }
 
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -559,6 +561,18 @@
         console.log("Could not load realtime counts");
       } finally {
         renderClubs();
+        renderAdminTable();
+        renderTeacherSummary();
+        updateDashboardStats();
+      }
+    }
+
+    // ✅ ส่งโครงสร้างชุมนุมไปบันทึกบน Google Sheets
+    async function syncClubsToSheet() {
+      try {
+        await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}`);
+      } catch(e) {
+        console.error("Save clubs failed", e);
       }
     }
 
@@ -607,7 +621,6 @@
       }
     }
 
-    // ✅ ฟังก์ชันเช็กจากชื่อชุมนุมตรงๆ ป้องกันไม่ให้เลขที่นักเรียนไปตรงกับ ID ชุมนุม
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
@@ -1052,12 +1065,17 @@
       }
     }
 
-    function toggleSystem() {
+    // ✅ สลับสถานะเปิด/ปิด ระบบและบันทึกขึ้น Google Sheets
+    async function toggleSystem() {
       isSystemOpen = !isSystemOpen;
-      localStorage.setItem('isSystemOpen', JSON.stringify(isSystemOpen));
-      
       updateSystemUI();
       renderClubs();
+      
+      try {
+        await fetch(`${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}`);
+      } catch(e) {
+        console.error("Toggle system failed", e);
+      }
     }
 
     function updateSystemUI() {
@@ -1074,6 +1092,7 @@
       }
     }
 
+    // ✅ บันทึกข้อมูลชุมนุมและส่งขึ้น Google Sheets
     function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
@@ -1094,13 +1113,14 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
-      saveClubsToStorage(); 
+      saveClubsToStorage();
+      syncClubsToSheet(); // 👈 บันทึกขึ้น Google Sheet ข้ามเครื่อง
       clearForm();
       renderAdminTable();
       renderTeacherSummary();
       renderClubs(); 
       updateDashboardStats();
-      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
+      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว (อัปเดตทุกเครื่อง)');
     }
 
     function clearForm() {
@@ -1132,10 +1152,12 @@
       }
     }
 
+    // ✅ ลบชุมนุมและส่งการลบขึ้น Google Sheets
     function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
-        saveClubsToStorage(); 
+        saveClubsToStorage();
+        syncClubsToSheet(); // 👈 อัปเดตลบขึ้น Google Sheet ข้ามเครื่อง
         renderAdminTable();
         renderTeacherSummary();
         renderClubs(); 
@@ -1210,8 +1232,7 @@
           alert("✅ รีเซ็ตระบบสำเร็จ! ช่องการเลือกชุมนุมใน Google Sheets ถูกเคลียร์ว่างหมดแล้วพร้อมเริ่มปีศึกษาใหม่ครับ");
           document.getElementById('reset-confirm-text').value = "";
           isSystemOpen = false;
-          localStorage.setItem('isSystemOpen', 'false');
-          updateSystemUI(); 
+          toggleSystem();
           logout(); 
         } else {
           alert("❌ เกิดข้อผิดพลาดจาก Google Sheets: " + result.message);
