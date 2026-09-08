@@ -438,7 +438,7 @@
       await fetchRealtimeCounts(); 
     };
 
-    // 1. ดึงข้อมูลสดจาก Google Sheets & PropertiesService
+    // 1. ดึงข้อมูลสดจาก Google Sheets & Config Sheet
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
@@ -473,18 +473,18 @@
       }
     }
 
-    // 2. บันทึกข้อมูลชุมนุมลง Google Sheets
+    // 2. บันทึกข้อมูลชุมนุมลง Google Sheets (ชีต Config ช่อง A1)
     async function syncClubsToSheet() {
       try {
-        const params = new URLSearchParams();
-        params.append('action', 'saveClubs');
-        params.append('clubs', JSON.stringify(clubsDb));
+        const formData = new FormData();
+        formData.append('action', 'saveClubs');
+        formData.append('clubs', JSON.stringify(clubsDb));
 
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString()
+          body: formData
         });
+        return await response.json();
       } catch(e) {
         console.error("Error saving clubs:", e);
       }
@@ -497,14 +497,13 @@
       renderClubs();
       
       try {
-        const params = new URLSearchParams();
-        params.append('action', 'toggleSystem');
-        params.append('isOpen', isSystemOpen);
+        const formData = new FormData();
+        formData.append('action', 'toggleSystem');
+        formData.append('isOpen', isSystemOpen);
 
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString()
+          body: formData
         });
       } catch(e) {
         console.error("Error toggling system:", e);
@@ -1007,7 +1006,7 @@
       }
     }
 
-    // 6. เพิ่ม / แก้ไข ชุมนุม
+    // 6. เพิ่ม / แก้ไข ชุมนุม (ส่งลงชีต Config ช่อง A1 ถาวร)
     async function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
@@ -1018,7 +1017,10 @@
       const targetRoom = document.getElementById('c-target-room').value;
       const desc = document.getElementById('c-desc').value || "-";
 
-      if(!name || !teacher || !max) { alert('⚠️ กรุณากรอกข้อมูลหลักให้ครบถ้วนครับ'); return; }
+      if(!name || !teacher || !max) { 
+        alert('⚠️ กรุณากรอกข้อมูลหลักให้ครบถ้วนครับ'); 
+        return; 
+      }
 
       if(idInput) {
         const index = clubsDb.findIndex(c => c.id == idInput);
@@ -1028,11 +1030,13 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
-      // บันทึกลง Google Sheets และรีโหลดข้อมูลสด
+      // ส่งข้อมูลไปเซฟจริงลงชีต Config
       await syncClubsToSheet();
       clearForm();
+      
+      // ดึงข้อมูลสดกลับมาอัปเดตหน้าจอทันที
       await fetchRealtimeCounts(); 
-      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
+      alert('✅ บันทึกข้อมูลชุมนุมลง Google Sheets ถาวรเรียบร้อยแล้ว');
     }
 
     function clearForm() {
