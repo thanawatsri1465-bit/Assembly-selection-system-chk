@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
+    /* 🚫 ซ่อนป้าย Netlify */
     #netlify-badge, [data-netlify-badge], [data-netlify-deploy-id], .netlify-badge, iframe#netlify-identity-widget, iframe[src*="netlify"], div[class*="netlify"], [class*="feedback"], [class*="badge"], [id*="badge"], [class*="drawer"] {
       display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
@@ -373,17 +374,25 @@
 
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-    // ⚠️ นำ URL จากการ Deploy Apps Script ล่าสุดมาวางตรงนี้
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwg8pHqCk2dapp1Ku3l9lETTBONJD98Bzb45Y0fJ-XZhhRGeboDyvUvHDAplFOLE18pkw/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgUW1LO2rOYseKdwxZuWx8liENo8sozYEQ1TCFzddSW95NR_P8CVRCSuDnjHIHlOaB_g/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
     let currentClubMembers = [];
     let allRawStudentsData = [];
-    let clubCountsMap = {};
+    let clubCountsMap = {}; 
 
-    // 🟢 แก้ไข: ใช้ตัวแปรอาร์เรย์ว่างเพื่อโหลดข้อมูลกลางจาก Google Sheets ร่วมกันทุกเครื่อง
-    let clubsDb = [];
+    const defaultClubs = [
+      { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
+      { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
+    ];
+
+    let savedClubs = JSON.parse(localStorage.getItem('clubsDb'));
+    let clubsDb = (savedClubs !== null && Array.isArray(savedClubs)) ? savedClubs : defaultClubs;
+
+    function saveClubsToStorage() {
+      localStorage.setItem('clubsDb', JSON.stringify(clubsDb));
+    }
 
     window.onload = () => { 
       document.getElementById('school-logo-top').src = LOGO_URL;
@@ -396,51 +405,22 @@
       renderAdminTable(); 
       renderTeacherSummary();
       updateDashboardStats();
-
-      // 🚀 1. เช็กสถานะการ เปิด/ปิด ระบบแบบด่วนทุกๆ 1.5 วินาที
-      setInterval(checkSystemStatusFast, 1500);
-
-      // 🚀 2. ดึงจำนวนคนที่สมัครและรายชื่อชุมนุมทุกๆ 5 วินาที
-      setInterval(fetchRealtimeCounts, 5000);
     };
 
-    // ⚡ ฟังก์ชันเช็กเฉพาะสถานะ เปิด/ปิด ระบบ
-    async function checkSystemStatusFast() {
-      try {
-        const response = await fetch(`${SCRIPT_URL}?action=getSystemStatus&_r=${Math.random()}`, {
-          cache: 'no-store'
-        });
-        const result = await response.json();
-        
-        if (result.status === "success" && typeof result.isSystemOpen !== "undefined") {
-          if (isSystemOpen !== result.isSystemOpen) {
-            isSystemOpen = result.isSystemOpen;
-            updateSystemUI();
-            renderClubs();
-          }
-        }
-      } catch(e) {
-        console.log("Status check error", e);
-      }
-    }
-
+    // ✅ ดึงข้อมูลสดจาก Google Sheet ถาวร
     async function fetchRealtimeCounts() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, {
-          cache: 'no-store'
-        });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
-
-        if (typeof result.isSystemOpen !== "undefined") {
-          if (isSystemOpen !== result.isSystemOpen) {
-            isSystemOpen = result.isSystemOpen;
-            updateSystemUI();
-          }
+        
+        if (result.clubs !== null && typeof result.clubs !== "undefined" && Array.isArray(result.clubs)) {
+          clubsDb = result.clubs;
+          saveClubsToStorage();
         }
 
-        // 🟢 ดึงข้อมูลชุมนุมจาก Google Sheets ให้ใช้ข้อมูลชุดเดียวกันทุกเครื่อง
-        if (result.clubs && Array.isArray(result.clubs)) {
-          clubsDb = result.clubs;
+        if (typeof result.isSystemOpen !== "undefined") {
+          isSystemOpen = result.isSystemOpen;
+          updateSystemUI();
         }
 
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -463,14 +443,36 @@
       }
     }
 
+    // ✅ ส่งคำสั่งบันทึกรายการชุมนุมไปยัง Google Sheets (แบบ POST Form Data)
+    function syncClubsToSheet() {
+      const params = new URLSearchParams();
+      params.append('action', 'saveClubs');
+      params.append('clubs', JSON.stringify(clubsDb));
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      }).catch(e => console.error("Error saving clubs:", e));
+    }
+
+    // ✅ ส่งคำสั่งสลับเปิด/ปิดระบบไปยัง Google Sheets (แบบ POST Form Data)
     function toggleSystem() {
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
       renderClubs();
       
-      const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&_r=${Math.random()}`;
-      fetch(url, { method: 'POST', mode: 'no-cors' })
-        .catch(e => console.error(e));
+      const params = new URLSearchParams();
+      params.append('action', 'toggleSystem');
+      params.append('isOpen', isSystemOpen);
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      }).catch(e => console.error("Error toggling system:", e));
     }
 
     function updateRoomDropdownOptions(selectedRoomValue = "") {
@@ -521,11 +523,7 @@
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
-
-      if (valStr === "" || valStr === "null" || valStr === "undefined" || valStr === "0") {
-        return "";
-      }
-
+      
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === valStr || c.name === valStr);
       if(matchClub) {
         return `${matchClub.icon} ${matchClub.name}`;
@@ -551,15 +549,22 @@
       submitBtn.innerText = "กำลังตรวจสอบข้อมูล...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&_r=${Math.random()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}`);
         const result = await response.json();
 
         if (result.status === "success" && result.role === "student") {
           currentUser = result.data;
           alert(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับคุณ ${currentUser.name}`);
           
-          currentUser.club = getClubDisplayName(currentUser.club);
-          switchPage('dashboard');
+          let studentClub = getClubDisplayName(currentUser.club);
+
+          if(studentClub !== "") {
+            currentUser.club = studentClub; 
+            switchPage('myclub-view');
+          } else {
+            currentUser.club = ""; 
+            switchPage('dashboard');
+          }
         } else {
           alert(result.message || "ไม่พบรหัสผู้ใช้งานนี้ในระบบ");
         }
@@ -630,7 +635,7 @@
       btnEl.innerText = "กำลังบันทึก...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&_r=${Math.random()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}`);
         const result = await response.json();
 
         if(result.status === "success") {
@@ -653,12 +658,6 @@
       const titleEl = document.getElementById('myclub-title');
       const teacherEl = document.getElementById('myclub-teacher');
       let studentClub = getClubDisplayName(currentUser.club);
-
-      if (!studentClub || studentClub === "") {
-        switchPage('dashboard');
-        return;
-      }
-
       titleEl.innerText = `🎯 ชุมนุมของคุณ: ${studentClub}`;
       
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === studentClub);
@@ -668,15 +667,11 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">กำลังโหลดรายชื่อเพื่อนร่วมชุมนุมจาก Google Sheet...</td></tr>`;
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if (result.status === "success") {
-          currentClubMembers = result.data.filter(st => {
-            const stClub = getClubDisplayName(st.club);
-            return stClub !== "" && stClub === studentClub;
-          });
-
+          currentClubMembers = result.data.filter(st => getClubDisplayName(st.club) === studentClub);
           if (currentClubMembers.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">ยังไม่มีนักเรียนคนอื่นลงทะเบียนในชุมนุมนี้</td></tr>`;
             return;
@@ -725,7 +720,7 @@
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมดจาก Google Sheets...</td></tr>';
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if(result.status === "success") {
@@ -951,7 +946,7 @@
       document.getElementById('stat-total-seats').innerText = `${totalSeats} ที่นั่ง`;
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_r=${Math.random()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -983,8 +978,7 @@
       }
     }
 
-    // 🟢 แก้ไข: ส่งข้อมูลชุมนุมไปบันทึกที่ Google Apps Script
-    async function saveClub() {
+    function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
       const name = document.getElementById('c-name').value;
@@ -996,21 +990,22 @@
 
       if(!name || !teacher || !max) { alert('⚠️ กรุณากรอกข้อมูลหลักให้ครบถ้วนครับ'); return; }
 
-      const clubData = { id: idInput || Date.now(), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
-
-      try {
-        await fetch(`${SCRIPT_URL}?action=saveClubData`, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(clubData)
-        });
-        alert('✅ บันทึกข้อมูลชุมนุมไปยังฐานข้อมูลเรียบร้อยแล้ว');
-        clearForm();
-        fetchRealtimeCounts();
-      } catch(e) {
-        alert('❌ ไม่สามารถบันทึกข้อมูลไปยัง Google Sheets ได้');
+      if(idInput) {
+        const index = clubsDb.findIndex(c => c.id == idInput);
+        if(index > -1) clubsDb[index] = { id: parseInt(idInput), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
+      } else {
+        const newId = clubsDb.length > 0 ? Math.max(...clubsDb.map(c => c.id)) + 1 : 1;
+        clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
+
+      saveClubsToStorage();
+      syncClubsToSheet();
+      clearForm();
+      renderAdminTable();
+      renderTeacherSummary();
+      renderClubs(); 
+      updateDashboardStats();
+      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
     }
 
     function clearForm() {
@@ -1042,19 +1037,15 @@
       }
     }
 
-    // 🟢 แก้ไข: ส่งคำสั่งลบชุมนุมไปยัง Google Apps Script
-    async function deleteClub(id) {
-      if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากฐานข้อมูลใช่หรือไม่?')) {
-        try {
-          await fetch(`${SCRIPT_URL}?action=deleteClubData&id=${id}`, {
-            method: 'POST',
-            mode: 'no-cors'
-          });
-          alert('🗑️ ลบข้อมูลชุมนุมเรียบร้อยแล้ว');
-          fetchRealtimeCounts();
-        } catch(e) {
-          alert('❌ ไม่สามารถส่งคำสั่งลบไปยัง Google Sheets ได้');
-        }
+    function deleteClub(id) {
+      if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
+        clubsDb = clubsDb.filter(c => c.id != id);
+        saveClubsToStorage();
+        syncClubsToSheet();
+        renderAdminTable();
+        renderTeacherSummary();
+        renderClubs(); 
+        updateDashboardStats();
       }
     }
 
@@ -1118,11 +1109,11 @@
       btnReset.innerText = "กำลังสั่งล้างฐานข้อมูลระบบ...";
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=reset&_r=${Math.random()}`, { cache: 'no-store' });
+        const response = await fetch(`${SCRIPT_URL}?action=reset`);
         const result = await response.json();
 
         if (result.status === "success") {
-          alert("✅ รีเซ็ตระบบสำเร็จ! เคลียร์ข้อมูล Google Sheets เรียบร้อยแล้วครับ");
+          alert("✅ รีเซ็ตระบบสำเร็จ! ช่องการเลือกชุมนุมใน Google Sheets ถูกเคลียร์ว่างหมดแล้วพร้อมเริ่มปีศึกษาใหม่ครับ");
           document.getElementById('reset-confirm-text').value = "";
           isSystemOpen = false;
           toggleSystem();
@@ -1131,7 +1122,7 @@
           alert("❌ เกิดข้อผิดพลาดจาก Google Sheets: " + result.message);
         }
       } catch (error) {
-        alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้");
+        alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้ กรุณาเช็คการ Deploy Apps Script");
       } finally {
         btnReset.disabled = false;
         btnReset.innerText = "🚨 ยืนยันล้างข้อมูลและรีเซ็ตระบบ 🚨";
