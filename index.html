@@ -30,38 +30,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
-    /* 🔄 Full-screen Loading Overlay (หน้าจอหมุนโหลดบังมิด 100%) */
-    #full-page-loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: #ffffff;
-      z-index: 99999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-
-    .refresh-spinner {
-      width: 65px;
-      height: 65px;
-      border: 6px solid #f3e8ff;
-      border-top: 6px solid #86198f;
-      border-right: 6px solid #ec4899;
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     /* Header & Layout */
     .top-header { background: white; border-bottom: 1px solid var(--border-purple); padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .top-header img { height: 40px; width: auto; object-fit: contain; }
@@ -113,6 +81,11 @@
     .lock-badge { background: #be185d; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; vertical-align: middle; }
 
     .btn-logout-pink { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+    /* 🌀 Loading Spinner Styles */
+    .loading-box { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; }
+    .spinner { width: 50px; height: 50px; border: 5px solid #f3e8ff; border-top: 5px solid #ec4899; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* Login Form */
     .login-wrapper { width: 100%; max-width: 400px; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(134, 25, 143, 0.2); text-align: center; position: relative; }
@@ -171,13 +144,6 @@
 </head>
 <body>
 
-  <!-- 🔄 หน้าจอหมุนโหลดดิ้งบังมิดทั้งหน้าก่อนเข้าเว็บ -->
-  <div id="full-page-loader">
-    <div class="refresh-spinner"></div>
-    <h3 style="font-family:'Kanit'; color:#86198f; margin-bottom:6px;">กำลังโหลดข้อมูลชุมนุมล่าสุด...</h3>
-    <p style="color:gray; font-size:13px;">โปรดรอสักครู่ ระบบกำลังเชื่อมต่อฐานข้อมูล Google Sheets</p>
-  </div>
-
   <div class="top-header">
     <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-top" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
     <h2>ระบบลงทะเบียนกิจกรรมชุมนุม - โรงเรียนโชคชัยสามัคคี</h2>
@@ -216,7 +182,14 @@
       </div>
 
       <h3 style="margin-bottom: 20px; font-family:'Kanit'; color:#701a75;">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</h3>
-      <div class="clubs-grid" id="clubs-container"></div>
+      <div class="clubs-grid" id="clubs-container">
+        <!-- 🌀 Spinner โหลดดิ้งหมุนๆ แสดงขณะรอข้อมูลจาก Google Sheets -->
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <p style="color:#86198f; font-weight:bold; font-size:16px;">กำลังดึงข้อมูลชุมนุมล่าสุดจากระบบ...</p>
+          <p style="color:gray; font-size:13px; margin-top:5px;">โปรดรอสักครู่ ระบบกำลังเชื่อมต่อ Google Sheets</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -462,7 +435,7 @@
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
-    let clubsDb = [];
+    let clubsDb = null; // ตั้งค่าเริ่มต้นเป็น null เพื่อแยกแยะว่า "กำลังโหลดอยู่" หรือ "ไม่มีข้อมูลจริงๆ"
 
     window.onload = async () => { 
       localStorage.removeItem('clubsDb');
@@ -485,6 +458,8 @@
         
         if (result.clubs && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
+        } else {
+          clubsDb = [];
         }
 
         if (typeof result.isSystemOpen !== "undefined") {
@@ -504,19 +479,12 @@
         }
       } catch(e) {
         console.warn("Could not load realtime counts from Google Sheets API");
+        if(clubsDb === null) clubsDb = [];
       } finally {
         renderClubs();
         renderAdminTable();
         renderTeacherSummary();
         updateDashboardStats();
-
-        // 🟢 เมื่อโหลดข้อมูลเสร็จสมบูรณ์ ให้จางหายและปิดหน้าจอ Overlay ทันที!
-        const loader = document.getElementById('full-page-loader');
-        if(loader) {
-          loader.style.opacity = '0';
-          loader.style.visibility = 'hidden';
-          setTimeout(() => { loader.style.display = 'none'; }, 400);
-        }
       }
     }
 
@@ -525,7 +493,7 @@
       try {
         const params = new URLSearchParams();
         params.append('action', 'saveClubs');
-        params.append('clubs', JSON.stringify(clubsDb));
+        params.append('clubs', JSON.stringify(clubsDb || []));
 
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -605,7 +573,7 @@
     }
 
     function getClubDisplayName(clubVal) {
-      if(!clubVal) return "";
+      if(!clubVal || !clubsDb) return "";
       const valStr = clubVal.toString().trim();
       const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === valStr || c.name === valStr);
       return matchClub ? `${matchClub.icon} ${matchClub.name}` : valStr;
@@ -739,7 +707,7 @@
       let studentClub = getClubDisplayName(currentUser.club);
       titleEl.innerText = `🎯 ชุมนุมของคุณ: ${studentClub}`;
       
-      const matchClub = clubsDb.find(c => `${c.icon} ${c.name}` === studentClub);
+      const matchClub = (clubsDb || []).find(c => `${c.icon} ${c.name}` === studentClub);
       teacherEl.innerText = matchClub ? `คุณครูที่ปรึกษาประจำชุมนุม: ${matchClub.teacher}` : `คุณครูที่ปรึกษาประจำชุมนุม: ไม่พบข้อมูล`;
       
       const tbody = document.getElementById('myclub-members-table');
@@ -820,7 +788,7 @@
       
       if(clubSelect) {
         clubSelect.innerHTML = '<option value="ALL">-- แสดงนักเรียนทุกชุมนุม --</option><option value="NONE">❌ ยังไม่ได้ลงทะเบียน</option>';
-        clubsDb.forEach(c => {
+        (clubsDb || []).forEach(c => {
           const fullName = `${c.icon} ${c.name}`;
           clubSelect.innerHTML += `<option value="${fullName}">${fullName}</option>`;
         });
@@ -900,6 +868,18 @@
     function renderClubs() {
       const container = document.getElementById('clubs-container');
       if (!container) return;
+
+      // 🌀 ถ้ายังโหลดข้อมูลไม่เสร็จ ให้แสดงหน้าจอหมุนรอ
+      if (clubsDb === null) {
+        container.innerHTML = `
+          <div class="loading-box">
+            <div class="spinner"></div>
+            <p style="color:#86198f; font-weight:bold; font-size:16px;">กำลังดึงข้อมูลชุมนุมล่าสุดจากระบบ...</p>
+            <p style="color:gray; font-size:13px; margin-top:5px;">โปรดรอสักครู่ ระบบกำลังเชื่อมต่อ Google Sheets</p>
+          </div>`;
+        return;
+      }
+
       container.innerHTML = '';
       
       const alertSys = document.getElementById('system-alert');
@@ -951,7 +931,7 @@
       });
 
       if(filteredClubs.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:gray;">🔍 ไม่พบกิจกรรมชุมนุมในระบบ (กรุณาเพิ่มชุมนุมในหน้า Admin)</div>`;
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:50px; color:gray;">🔍 ไม่พบกิจกรรมชุมนุมในระบบ (กรุณาเพิ่มชุมนุมในหน้า Admin)</div>`;
         return;
       }
 
@@ -1018,6 +998,7 @@
     }
 
     async function updateDashboardStats() {
+      if(!clubsDb) return;
       document.getElementById('stat-total-clubs').innerText = clubsDb.length;
       const totalSeats = clubsDb.reduce((sum, c) => sum + parseInt(c.max || 0), 0);
       document.getElementById('stat-total-seats').innerText = `${totalSeats} ที่นั่ง`;
@@ -1057,6 +1038,7 @@
 
     // 6. เพิ่ม / แก้ไข ชุมนุม (ส่งลงชีต Config ช่อง A1 ถาวร)
     async function saveClub() {
+      if(!clubsDb) clubsDb = [];
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
       const name = document.getElementById('c-name').value;
@@ -1102,6 +1084,7 @@
     }
 
     function editClub(id) {
+      if(!clubsDb) return;
       const c = clubsDb.find(club => club.id == id);
       if(c) {
         document.getElementById('edit-id').value = c.id;
@@ -1119,6 +1102,7 @@
 
     // 7. ลบชุมนุมออกจากระบบ
     async function deleteClub(id) {
+      if(!clubsDb) return;
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
         await syncClubsToSheet();
@@ -1131,6 +1115,7 @@
       const tbody = document.getElementById('admin-table');
       if(!tbody) return;
       tbody.innerHTML = '';
+      if(!clubsDb) return;
       clubsDb.forEach(c => {
         const roomInfo = c.targetRoom ? `<span class="room-badge">เฉพาะห้อง ${c.targetRoom}</span>` : '';
         tbody.innerHTML += `
@@ -1153,7 +1138,7 @@
       if(!tbody) return;
       tbody.innerHTML = '';
 
-      if(clubsDb.length === 0) {
+      if(!clubsDb || clubsDb.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray; padding:20px;">ยังไม่มีการสร้างชุมนุมในระบบ</td></tr>';
         return;
       }
