@@ -7,22 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
-    /* 🚫 ซ่อนป้าย และแท็บ Feedback / Drawer มุมขวาล่างทุกรูปแบบ */
-    #netlify-badge, 
-    [data-netlify-badge],
-    [data-netlify-deploy-id],
-    .netlify-badge,
-    iframe#netlify-identity-widget,
-    iframe[src*="netlify"],
-    div[class*="netlify"],
-    [class*="feedback"],
-    [class*="badge"],
-    [id*="badge"],
-    [class*="drawer"] {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
+    /* 🚫 ซ่อนป้าย Netlify */
+    #netlify-badge, [data-netlify-badge], [data-netlify-deploy-id], .netlify-badge, iframe#netlify-identity-widget, iframe[src*="netlify"], div[class*="netlify"], [class*="feedback"], [class*="badge"], [id*="badge"], [class*="drawer"] {
+      display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
 
     :root {
@@ -36,138 +23,33 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
-    .top-header {
-      background: white;
-      border-bottom: 1px solid #f5d0fe;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .top-header img {
-      height: 40px;
-      width: auto;
-      object-fit: contain;
-    }
-    .top-header h2 {
-      font-family: 'Kanit', sans-serif;
-      color: var(--primary-purple);
-      font-size: 18px;
-    }
+    .top-header { background: white; border-bottom: 1px solid #f5d0fe; padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .top-header img { height: 40px; width: auto; object-fit: contain; }
+    .top-header h2 { font-family: 'Kanit', sans-serif; color: var(--primary-purple); font-size: 18px; }
 
     .page-view { display: none; } 
     .page-view.active { display: block; animation: fadeIn 0.4s; }
 
-    #login-view.active { 
-      display: flex !important; 
-      align-items: center; 
-      justify-content: center; 
-      min-height: 100vh;
-      width: 100%;
-      background: linear-gradient(135deg, #a21caf 0%, #ec4899 100%);
-    }
+    #login-view.active { display: flex !important; align-items: center; justify-content: center; min-height: 100vh; width: 100%; background: linear-gradient(135deg, #a21caf 0%, #ec4899 100%); }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .main-container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-    .hero-section { 
-      background: linear-gradient(135deg, #86198f 0%, #d946ef 100%); 
-      padding: 45px 20px; 
-      border-radius: 20px; 
-      color: white; 
-      text-align: center; 
-      margin-bottom: 30px; 
-      box-shadow: 0 10px 25px rgba(217, 70, 239, 0.2);
-    }
+    .hero-section { background: linear-gradient(135deg, #86198f 0%, #d946ef 100%); padding: 45px 20px; border-radius: 20px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(217, 70, 239, 0.2); }
 
-    .btn-primary { 
-      background: white; 
-      color: #a21caf; 
-      border: none; 
-      padding: 12px 28px; 
-      border-radius: 30px; 
-      font-weight: bold; 
-      cursor: pointer; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+    .btn-primary { background: white; color: #a21caf; border: none; padding: 12px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-    /* 🔍 กล่องค้นหาและตัวกรองหน้าหลัก */
-    .search-filter-box {
-      background: white;
-      padding: 15px 20px;
-      border-radius: 15px;
-      border: 1px solid #f5d0fe;
-      margin-bottom: 25px;
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-    .search-input-wrap {
-      flex: 1;
-      min-width: 250px;
-      position: relative;
-    }
-    .search-input-wrap input {
-      width: 100%;
-      padding: 10px 15px 10px 35px;
-      border: 1px solid #fbcfe8;
-      border-radius: 8px;
-      outline: none;
-      font-family: var(--font-main);
-      font-size: 14px;
-    }
-    .search-input-wrap::before {
-      content: '🔍';
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      opacity: 0.5;
-    }
-    .filter-checkbox-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: #701a75;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .filter-checkbox-wrap input {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary-pink);
-      cursor: pointer;
-    }
+    .search-filter-box { background: white; padding: 15px 20px; border-radius: 15px; border: 1px solid #f5d0fe; margin-bottom: 25px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .search-input-wrap { flex: 1; min-width: 250px; position: relative; }
+    .search-input-wrap input { width: 100%; padding: 10px 15px 10px 35px; border: 1px solid #fbcfe8; border-radius: 8px; outline: none; font-family: var(--font-main); font-size: 14px; }
+    .search-input-wrap::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.5; }
+    .filter-checkbox-wrap { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #701a75; font-weight: 500; cursor: pointer; }
+    .filter-checkbox-wrap input { width: 18px; height: 18px; accent-color: var(--primary-pink); cursor: pointer; }
 
-    /* 📊 Progress Bar ที่นั่งชุมนุม */
-    .progress-container {
-      margin: 10px 0 12px 0;
-    }
-    .progress-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-    .progress-bar-bg {
-      width: 100%;
-      height: 8px;
-      background: #f3e8ff;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 10px;
-      transition: width 0.4s ease, background-color 0.4s ease;
-    }
+    .progress-container { margin: 10px 0 12px 0; }
+    .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+    .progress-bar-bg { width: 100%; height: 8px; background: #f3e8ff; border-radius: 10px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease, background-color 0.4s ease; }
 
     .clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
     .club-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #f5d0fe; display: flex; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
@@ -234,7 +116,6 @@
 </head>
 <body>
 
-  <!-- 🏫 แถบด้านบนแสดงโลโก้และชื่อโรงเรียน -->
   <div class="top-header">
     <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-top" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
     <h2>ระบบลงทะเบียนกิจกรรมชุมนุม - โรงเรียนโชคชัยสามัคคี</h2>
@@ -261,7 +142,6 @@
         <button class="btn-primary" id="btn-login-page" onclick="switchPage('login')">🔓 เข้าสู่ระบบลงทะเบียน</button>
       </div>
 
-      <!-- 🔍 ช่องค้นหาและตัวกรองหน้าหลัก -->
       <div class="search-filter-box">
         <div class="search-input-wrap">
           <input type="text" id="user-club-search" oninput="renderClubs()" placeholder="ค้นหาชื่อชุมนุม หรือ ชื่อครูที่ปรึกษา...">
@@ -493,9 +373,7 @@
   </div>
 
   <script>
-    // 🖼️ URL รูปภาพโลโก้โรงเรียน
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgUW1LO2rOYseKdwxZuWx8liENo8sozYEQ1TCFzddSW95NR_P8CVRCSuDnjHIHlOaB_g/exec"; 
 
     let isSystemOpen = true;
@@ -529,19 +407,17 @@
       updateDashboardStats();
     };
 
-    // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets ทุกครั้ง
+    // ✅ ดึงข้อมูลสดจาก Google Sheet ถาวร
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
-        // หาก Google Sheets ส่งข้อมูลชุมนุมมา (ใช้ข้อมูลจาก Google Sheets เป็นหลัก 100%)
         if (result.clubs !== null && typeof result.clubs !== "undefined" && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
           saveClubsToStorage();
         }
 
-        // อัปเดตสถานะ เปิด/ปิด ระบบจากฐานข้อมูลกลาง Google Sheets
         if (typeof result.isSystemOpen !== "undefined") {
           isSystemOpen = result.isSystemOpen;
           updateSystemUI();
@@ -567,14 +443,20 @@
       }
     }
 
-    // ✅ ส่งโครงสร้างชุมนุมไปบันทึกบน Google Sheets ข้ามเครื่อง
-    async function syncClubsToSheet() {
-      try {
-        const url = `${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}`;
-        await fetch(url, { method: 'POST', mode: 'no-cors' });
-      } catch(e) {
-        console.error("Save clubs failed", e);
-      }
+    // ✅ ส่งคำสั่งบันทึกรายการชุมนุมไปยัง Google Sheets
+    function syncClubsToSheet() {
+      const url = `${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}`;
+      fetch(url, { method: 'POST', mode: 'no-cors' }).catch(e => console.error(e));
+    }
+
+    // ✅ ส่งคำสั่งสลับเปิด/ปิดระบบไปยัง Google Sheets
+    function toggleSystem() {
+      isSystemOpen = !isSystemOpen;
+      updateSystemUI();
+      renderClubs();
+      
+      const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}`;
+      fetch(url, { method: 'POST', mode: 'no-cors' }).catch(e => console.error(e));
     }
 
     function updateRoomDropdownOptions(selectedRoomValue = "") {
@@ -1066,20 +948,6 @@
       }
     }
 
-    // ✅ สลับสถานะเปิด/ปิด ระบบและบันทึกขึ้น Google Sheets
-    async function toggleSystem() {
-      isSystemOpen = !isSystemOpen;
-      updateSystemUI();
-      renderClubs();
-      
-      try {
-        const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}`;
-        await fetch(url, { method: 'POST', mode: 'no-cors' });
-      } catch(e) {
-        console.error("Toggle system failed", e);
-      }
-    }
-
     function updateSystemUI() {
       const stText = document.getElementById('sys-status-text');
       const btn = document.getElementById('btn-sys-toggle');
@@ -1094,7 +962,6 @@
       }
     }
 
-    // ✅ บันทึกข้อมูลชุมนุมและส่งขึ้น Google Sheets
     function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
@@ -1116,13 +983,13 @@
       }
 
       saveClubsToStorage();
-      syncClubsToSheet(); // 👈 บันทึกขึ้น Google Sheet ข้ามเครื่อง
+      syncClubsToSheet();
       clearForm();
       renderAdminTable();
       renderTeacherSummary();
       renderClubs(); 
       updateDashboardStats();
-      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว (อัปเดตทุกเครื่อง)');
+      alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
     }
 
     function clearForm() {
@@ -1154,12 +1021,11 @@
       }
     }
 
-    // ✅ ลบชุมนุมและส่งการลบขึ้น Google Sheets
     function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
         saveClubsToStorage();
-        syncClubsToSheet(); // 👈 อัปเดตลบขึ้น Google Sheet ข้ามเครื่อง
+        syncClubsToSheet();
         renderAdminTable();
         renderTeacherSummary();
         renderClubs(); 
