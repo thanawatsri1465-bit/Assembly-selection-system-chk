@@ -414,8 +414,6 @@
 
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
-    
-    // 🎯 วาง Web App URL ที่เพิ่งกด Deploy ล่าสุดตรงนี้ครับ
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqil_KlIEj14N_d_kSTv7QaWKSh6x-hPkRm3pOAgYekiYMn-WtbfDw7-_nfePX3gPtKg/exec"; 
 
     let isSystemOpen = true;
@@ -434,17 +432,16 @@
       updateSystemUI(); 
       updateRoomDropdownOptions();
       
-      // ดึงข้อมูลสดจาก Google Sheet ทันทีที่เปิดหน้าเว็บ
+      // ดึงข้อมูลสดจาก Google Sheet ทันทีที่เข้าเว็บ
       await fetchRealtimeCounts(); 
     };
 
-    // 1. ดึงข้อมูลสดจาก Google Sheets & PropertiesService
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
-        if (result.clubs && Array.isArray(result.clubs)) {
+        if (result.clubs && Array.isArray(result.clubs) && result.clubs.length > 0) {
           clubsDb = result.clubs;
         }
 
@@ -473,38 +470,34 @@
       }
     }
 
-    // 2. บันทึกข้อมูลชุมนุมลง Google Sheets
     async function syncClubsToSheet() {
       try {
-        const params = new URLSearchParams();
-        params.append('action', 'saveClubs');
-        params.append('clubs', JSON.stringify(clubsDb));
+        const formData = new FormData();
+        formData.append('action', 'saveClubs');
+        formData.append('clubs', JSON.stringify(clubsDb));
 
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString()
+          body: formData
         });
       } catch(e) {
         console.error("Error saving clubs:", e);
       }
     }
 
-    // 3. สลับสถานะระบบเปิด/ปิด
     async function toggleSystem() {
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
       renderClubs();
       
       try {
-        const params = new URLSearchParams();
-        params.append('action', 'toggleSystem');
-        params.append('isOpen', isSystemOpen);
+        const formData = new FormData();
+        formData.append('action', 'toggleSystem');
+        formData.append('isOpen', isSystemOpen);
 
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString()
+          body: formData
         });
       } catch(e) {
         console.error("Error toggling system:", e);
@@ -563,7 +556,6 @@
       return matchClub ? `${matchClub.icon} ${matchClub.name}` : valStr;
     }
 
-    // 4. ระบบเข้าสู่ระบบ (Login)
     async function login(e) {
       e.preventDefault();
       const studentId = document.getElementById('log-id').value.trim();
@@ -643,7 +635,6 @@
       return { pass: true };
     }
 
-    // 5. ลงทะเบียนเข้าชุมนุม
     async function joinClub(clubName, targetGradeRule, targetRoomRule, btnEl) {
       let studentClub = currentUser && getClubDisplayName(currentUser.club);
       
@@ -1007,7 +998,6 @@
       }
     }
 
-    // 6. เพิ่ม / แก้ไข ชุมนุม
     async function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
@@ -1028,10 +1018,12 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
-      // บันทึกลง Google Sheets และรีโหลดข้อมูลสด
       await syncClubsToSheet();
       clearForm();
-      await fetchRealtimeCounts(); 
+      renderAdminTable();
+      renderTeacherSummary();
+      renderClubs(); 
+      updateDashboardStats();
       alert('✅ บันทึกข้อมูลชุมนุมถาวรเรียบร้อยแล้ว');
     }
 
@@ -1064,13 +1056,14 @@
       }
     }
 
-    // 7. ลบชุมนุมออกจากระบบ
     async function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
         clubsDb = clubsDb.filter(c => c.id != id);
         await syncClubsToSheet();
-        await fetchRealtimeCounts(); 
-        alert('✅ ลบชุมนุมเรียบร้อยแล้ว');
+        renderAdminTable();
+        renderTeacherSummary();
+        renderClubs(); 
+        updateDashboardStats();
       }
     }
 
