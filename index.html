@@ -529,10 +529,10 @@
       updateDashboardStats();
     };
 
-    // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets
+    // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets ทุกครั้ง
     async function fetchRealtimeCounts() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         // หาก Google Sheets ส่งข้อมูลชุมนุมมา (ใช้ข้อมูลจาก Google Sheets เป็นหลัก 100%)
@@ -567,10 +567,11 @@
       }
     }
 
-    // ✅ ส่งโครงสร้างชุมนุมไปบันทึกบน Google Sheets
+    // ✅ ส่งโครงสร้างชุมนุมไปบันทึกบน Google Sheets ข้ามเครื่อง
     async function syncClubsToSheet() {
       try {
-        await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}`);
+        const url = `${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}`;
+        await fetch(url, { method: 'POST', mode: 'no-cors' });
       } catch(e) {
         console.error("Save clubs failed", e);
       }
@@ -768,7 +769,7 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">กำลังโหลดรายชื่อเพื่อนร่วมชุมนุมจาก Google Sheet...</td></tr>`;
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if (result.status === "success") {
@@ -821,7 +822,7 @@
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมดจาก Google Sheets...</td></tr>';
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if(result.status === "success") {
@@ -1047,7 +1048,7 @@
       document.getElementById('stat-total-seats').innerText = `${totalSeats} ที่นั่ง`;
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -1072,7 +1073,8 @@
       renderClubs();
       
       try {
-        await fetch(`${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}`);
+        const url = `${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}`;
+        await fetch(url, { method: 'POST', mode: 'no-cors' });
       } catch(e) {
         console.error("Toggle system failed", e);
       }
