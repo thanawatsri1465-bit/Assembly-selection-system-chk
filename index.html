@@ -17,6 +17,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-main); min-height: 100vh; padding-bottom: 40px; }
 
+    /* Full Page Loader Spinner */
     #full-page-loader {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(255, 255, 255, 0.95);
@@ -33,8 +34,10 @@
     .loader-title { margin-top: 15px; font-size: 1.1rem; font-weight: 600; color: #701a75; }
     .loader-subtitle { font-size: 0.85rem; color: #a21caf; margin-top: 4px; }
 
+    /* Header Bar */
     .top-header {
-      background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       padding: 10px 0; border-bottom: 1px solid #f0e7f6;
     }
     .header-container {
@@ -44,14 +47,18 @@
     .header-logo { width: 38px; height: 38px; object-fit: contain; }
     .header-title { font-size: 1.1rem; font-weight: 700; color: #701a75; }
 
+    /* Main Container */
     .container { max-width: 1000px; margin: 25px auto; padding: 0 20px; }
     .page-view { display: none; }
     .page-view.active { display: block; }
 
+    /* Dashboard Hero Banner */
     .hero-purple {
-      background: var(--primary-gradient); color: white; border-radius: 20px;
+      background: var(--primary-gradient);
+      color: white; border-radius: 20px;
       padding: 40px 20px; text-align: center;
-      box-shadow: 0 10px 25px rgba(162, 28, 175, 0.2); margin-bottom: 25px;
+      box-shadow: 0 10px 25px rgba(162, 28, 175, 0.2);
+      margin-bottom: 25px;
     }
     .hero-school-name { font-size: 1rem; opacity: 0.9; margin-bottom: 5px; font-weight: 300; }
     .hero-main-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; letter-spacing: 0.5px; }
@@ -61,43 +68,49 @@
       padding: 8px 24px; border-radius: 50px; font-weight: 600;
       font-size: 0.9rem; cursor: pointer; display: inline-flex;
       align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
     }
+    .btn-login-capsule:hover { transform: translateY(-2px); }
 
-    .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-    .stat-card {
-      background: white; border-radius: 16px; padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3e8ff; border-left: 5px solid #a21caf;
-    }
-    .stat-title { font-size: 0.85rem; color: #666; font-weight: 500; }
-    .stat-num { font-size: 1.6rem; font-weight: 700; color: #701a75; margin-top: 5px; }
-
+    /* Search Box */
     .search-box-wrap { margin-bottom: 25px; }
     .search-input {
       width: 100%; padding: 12px 20px; border-radius: 12px;
-      border: 1px solid #e9d5ff; background: white; font-size: 0.95rem; outline: none;
+      border: 1px solid #e9d5ff; background: white; font-size: 0.95rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--primary-purple); }
+
+    /* Section Title */
+    .section-title {
+      font-size: 1.1rem; font-weight: 700; color: #701a75;
+      margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
     }
 
-    .section-title { font-size: 1.1rem; font-weight: 700; color: #701a75; margin-bottom: 15px; }
-
+    /* Clubs Grid */
     .clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
     .club-card {
       background: white; border-radius: 16px; padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3e8ff; display: flex; gap: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3e8ff;
+      display: flex; gap: 15px; transition: transform 0.2s;
     }
+    .club-card:hover { transform: translateY(-3px); }
     .club-card.selected-card { border: 2px solid #10b981; background: #f0fdf4; }
     .club-icon { font-size: 2rem; width: 50px; height: 50px; background: #faf5ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
 
     .progress-container { margin: 8px 0; }
     .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
     .progress-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; }
+    .progress-bar-fill { height: 100%; transition: width 0.3s ease; }
 
     .btn-join {
       background: var(--btn-gradient); color: white; border: none; padding: 6px 14px;
-      border-radius: 8px; font-size: 0.85rem; cursor: pointer;
+      border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s;
     }
+    .btn-join:hover { opacity: 0.9; }
     .btn-joined { background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; }
 
+    /* Login Box */
     .login-wrapper {
       min-height: calc(100vh - 120px); display: flex;
       justify-content: center; align-items: center; background: var(--primary-gradient);
@@ -117,18 +130,28 @@
       width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0;
       border-radius: 10px; font-size: 0.9rem; outline: none; margin-bottom: 15px;
     }
+    .form-control:focus { border-color: var(--primary-purple); }
 
     .btn-login-submit {
       width: 100%; padding: 12px; background: var(--btn-gradient);
-      color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+      color: white; border: none; border-radius: 10px; font-weight: 600;
+      font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s;
     }
+    .btn-login-submit:hover { opacity: 0.9; }
 
-    .btn-back-home { display: inline-block; margin-top: 15px; background: none; border: none; color: #888; font-size: 0.85rem; cursor: pointer; }
+    .btn-back-home {
+      display: inline-block; margin-top: 15px; background: none; border: none;
+      color: #888; font-size: 0.85rem; cursor: pointer; text-decoration: none;
+    }
+    .btn-back-home:hover { color: #555; }
 
+    /* Tables & Forms */
     .table-card, .form-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
     th { background: #faf5ff; color: #701a75; font-weight: 600; }
+    .tab-btn { padding: 8px 16px; border: none; background: #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 500; }
+    .tab-btn.active { background: #a21caf; color: white; }
     .toggle-btn { padding: 8px 16px; border-radius: 8px; border: none; color: white; cursor: pointer; font-weight: 500; }
     .toggle-open { background: #10b981; }
     .toggle-close { background: #ef4444; }
@@ -136,12 +159,14 @@
 </head>
 <body>
 
+  <!-- Full Page Spinner Loader -->
   <div id="full-page-loader">
     <div class="spinner"></div>
     <div class="loader-title" id="loader-title">กำลังเชื่อมต่อระบบ...</div>
     <div class="loader-subtitle" id="loader-subtitle">โปรดรอสักครู่ ระบบกำลังโหลดข้อมูล</div>
   </div>
 
+  <!-- Top Header -->
   <header class="top-header">
     <div class="header-container">
       <img id="school-logo-top" class="header-logo" src="" alt="Logo">
@@ -151,11 +176,15 @@
 
   <div class="container">
     
+    <!-- หน้าหลัก Dashboard -->
     <div id="dashboard-view" class="page-view active">
+      
       <div id="hero-banner" class="hero-purple">
         <div class="hero-school-name">โรงเรียนโชคชัยสามัคคี</div>
         <div class="hero-main-title">เลือกลงทะเบียนกิจกรรมชุมนุมประจำปี</div>
-        <button class="btn-login-capsule" onclick="switchPage('login')">🔒 เข้าสู่ระบบลงทะเบียน</button>
+        <button class="btn-login-capsule" onclick="switchPage('login')">
+          🔒 เข้าสู่ระบบลงทะเบียน
+        </button>
       </div>
 
       <div id="student-alert" style="display:none; background:white; padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid #e9d5ff;">
@@ -175,10 +204,14 @@
         </div>
       </div>
 
-      <div class="section-title">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</div>
+      <div class="section-title">
+        📚 รายชื่อกิจกรรมชุมนุมทั้งหมด
+      </div>
+
       <div id="clubs-container" class="clubs-grid"></div>
     </div>
 
+    <!-- หน้าเข้าสู่ระบบ -->
     <div id="login-view" class="page-view">
       <div class="login-wrapper">
         <div class="login-card">
@@ -197,6 +230,7 @@
       </div>
     </div>
 
+    <!-- หน้าชุมนุมของฉัน -->
     <div id="myclub-view" class="page-view">
       <div class="table-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -223,82 +257,125 @@
       </div>
     </div>
 
+    <!-- หน้าผู้ดูแลระบบ (Admin) -->
     <div id="admin-view" class="page-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h3 style="color:#701a75;">⚙️ แผงควบคุมระบบแอดมิน - โรงเรียนโชคชัยสามัคคี</h3>
+        <h3 style="color:#701a75;">⚙️ ระบบบริหารจัดการ (Admin)</h3>
         <button class="btn-join" style="background:#fecdd3; color:#be123c;" onclick="logout()">ออกจากระบบแอดมิน</button>
       </div>
 
-      <!-- สรุปตัวเลข 3 กล่องแบบเดิม -->
-      <div class="stat-cards">
-        <div class="stat-card" style="border-left-color: #a21caf;">
-          <div class="stat-title">จำนวนชุมนุมทั้งหมด</div>
-          <div class="stat-num" id="stat-total-clubs">0</div>
+      <div style="display:flex; gap:8px; margin-bottom:15px;">
+        <button class="tab-btn active" onclick="switchAdminTab('manage', this)">จัดการชุมนุม</button>
+        <button class="tab-btn" onclick="switchAdminTab('teachers', this)">สรุปครูผู้ดูแล</button>
+        <button class="tab-btn" onclick="switchAdminTab('reports', this)">รายงานนักเรียนทั้งหมด</button>
+        <button class="tab-btn" onclick="switchAdminTab('system', this)">ตั้งค่าระบบ</button>
+      </div>
+
+      <!-- Tab 1: จัดการชุมนุม -->
+      <div id="tab-manage" class="admin-tab-section">
+        <div class="form-card">
+          <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
+          <input type="hidden" id="edit-id">
+          <div style="display:grid; grid-template-columns: 1fr 2fr 2fr; gap:10px;">
+            <input type="text" id="c-icon" class="form-control" placeholder="ไอคอน ⚽">
+            <input type="text" id="c-name" class="form-control" placeholder="ชื่อชุมนุม">
+            <input type="text" id="c-teacher" class="form-control" placeholder="ครูผู้ดูแล">
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <input type="number" id="c-max" class="form-control" placeholder="รับจำนวน (คน)">
+            <select id="c-target-grade" class="form-control" onchange="updateRoomDropdownOptions()">
+              <option value="ทุกระดับชั้น (ม.1 - ม.6)">ทุกระดับชั้น (ม.1 - ม.6)</option>
+              <option value="มัธยมศึกษาตอนต้น (ม.1 - ม.3)">มัธยมศึกษาตอนต้น (ม.1 - ม.3)</option>
+              <option value="มัธยมศึกษาตอนปลาย (ม.4 - ม.6)">มัธยมศึกษาตอนปลาย (ม.4 - ม.6)</option>
+              <option value="ม.1">ม.1</option> <option value="ม.2">ม.2</option> <option value="ม.3">ม.3</option>
+              <option value="ม.4">ม.4</option> <option value="ม.5">ม.5</option> <option value="ม.6">ม.6</option>
+            </select>
+            <select id="c-target-room" class="form-control">
+              <option value="">เปิดรับทุกห้องเรียน</option>
+            </select>
+          </div>
+          <input type="text" id="c-desc" class="form-control" placeholder="รายละเอียดชุมนุมย่อๆ">
+          <button class="btn-join" onclick="saveClub()">บันทึกข้อมูลชุมนุม</button>
+          <button id="btn-cancel" class="btn-join" style="display:none; background:#ccc;" onclick="clearForm()">ยกเลิก</button>
         </div>
-        <div class="stat-card" style="border-left-color: #c026d3;">
-          <div class="stat-title">นักเรียนลงทะเบียนแล้ว</div>
-          <div class="stat-num" id="stat-registered-students">0 คน</div>
-        </div>
-        <div class="stat-card" style="border-left-color: #10b981;">
-          <div class="stat-title">ที่นั่งรวมทุกชุมนุม</div>
-          <div class="stat-num" id="stat-total-seats">0 ที่นั่ง</div>
+
+        <div class="table-card">
+          <h4>รายการชุมนุมในระบบ</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>ไอคอน</th>
+                <th>ชื่อชุมนุม</th>
+                <th>ครูผู้ดูแล</th>
+                <th>เงื่อนไข</th>
+                <th>รับสูงสุด</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table"></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="form-card">
-        <h4>สถานะระบบการลงทะเบียนหน้าบ้าน</h4>
-        <p id="sys-status-text" style="margin:10px 0; font-weight:bold;"></p>
-        <button id="btn-sys-toggle" class="toggle-btn" onclick="toggleSystem()"></button>
-      </div>
-
-      <div class="form-card">
-        <h4 id="form-mode" style="margin-bottom:10px; color:#701a75;">➕ เพิ่มกิจกรรมชุมนุมใหม่</h4>
-        <input type="hidden" id="edit-id">
-        <div style="display:grid; grid-template-columns: 1fr 2fr 2fr 1fr; gap:10px;">
-          <input type="text" id="c-icon" class="form-control" placeholder="ไอคอน (เช่น ⚽)">
-          <input type="text" id="c-name" class="form-control" placeholder="ชื่อชุมนุม">
-          <input type="text" id="c-teacher" class="form-control" placeholder="ครูที่ปรึกษา / ผู้ดูแล">
-          <input type="number" id="c-max" class="form-control" placeholder="รับสูงสุด (คน)">
+      <!-- Tab 2: สรุปครูผู้ดูแล -->
+      <div id="tab-teachers" class="admin-tab-section" style="display:none;">
+        <div class="table-card">
+          <h4>สรุปครูผู้ดูแลประจำชุมนุม</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อ-นามสกุล ครูผู้ดูแล</th>
+                <th>ชุมนุมที่รับผิดชอบ</th>
+                <th>ระดับชั้นที่เปิดรับ</th>
+              </tr>
+            </thead>
+            <tbody id="teacher-summary-table"></tbody>
+          </table>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <select id="c-target-grade" class="form-control" onchange="updateRoomDropdownOptions()">
-            <option value="ทุกระดับชั้น (ม.1 - ม.6)">เปิดรับกลุ่มชั้น: ทุกระดับชั้น (ม.1 - ม.6)</option>
-            <option value="มัธยมศึกษาตอนต้น (ม.1 - ม.3)">มัธยมศึกษาตอนต้น (ม.1 - ม.3)</option>
-            <option value="มัธยมศึกษาตอนปลาย (ม.4 - ม.6)">มัธยมศึกษาตอนปลาย (ม.4 - ม.6)</option>
-            <option value="ม.1">ม.1</option> <option value="ม.2">ม.2</option> <option value="ม.3">ม.3</option>
-            <option value="ม.4">ม.4</option> <option value="ม.5">ม.5</option> <option value="ม.6">ม.6</option>
-          </select>
-          <select id="c-target-room" class="form-control">
-            <option value="">เปิดรับทุกห้องเรียน</option>
-          </select>
+      </div>
+
+      <!-- Tab 3: รายงานนักเรียน -->
+      <div id="tab-reports" class="admin-tab-section" style="display:none;">
+        <div class="table-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h4>รายงานการลงทะเบียนของนักเรียน</h4>
+            <button class="btn-join" onclick="exportAllReportToExcel()">📥 ส่งออก Excel</button>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+            <select id="report-filter-class" class="form-control" onchange="filterAdminReport()"></select>
+            <select id="report-filter-club" class="form-control" onchange="filterAdminReport()"></select>
+            <input type="text" id="report-filter-search" class="form-control" placeholder="🔍 ค้นหารหัส/ชื่อ..." onkeyup="filterAdminReport()">
+          </div>
+          <div id="report-count-badge" style="margin-bottom:8px; font-weight:bold; color:#701a75;"></div>
+          <table>
+            <thead>
+              <tr>
+                <th>ลำดับ</th>
+                <th>รหัสนักเรียน</th>
+                <th>ชื่อ-นามสกุล</th>
+                <th>ห้องเรียน</th>
+                <th>ชุมนุมที่เลือก</th>
+              </tr>
+            </thead>
+            <tbody id="admin-report-table"></tbody>
+          </table>
         </div>
-        <input type="text" id="c-desc" class="form-control" placeholder="คำอธิบายรายละเอียดชุมนุม...">
-        <button class="btn-join" onclick="saveClub()">บันทึกข้อมูลชุมนุม</button>
-        <button id="btn-cancel" class="btn-join" style="display:none; background:#ccc;" onclick="clearForm()">ยกเลิก</button>
       </div>
 
-      <div class="table-card">
-        <h4>รายการชุมนุมในระบบ</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>ไอคอน</th>
-              <th>ชื่อชุมนุม</th>
-              <th>ครูผู้ดูแล</th>
-              <th>เงื่อนไข</th>
-              <th>รับสูงสุด</th>
-              <th>จัดการ</th>
-            </tr>
-          </thead>
-          <tbody id="admin-table"></tbody>
-        </table>
-      </div>
-
-      <div class="form-card" style="border:1px solid #fecdd3; background:#fff1f2;">
-        <h4 style="color:#be123c;">⚠️ รีเซ็ตระบบประจำปี</h4>
-        <p style="color:#9f1239; font-size:0.85rem; margin:6px 0;">พิมพ์คำว่า <b>RESET</b> เพื่อยืนยันการล้างข้อมูลนักเรียนทุกคน</p>
-        <input type="text" id="reset-confirm-text" class="form-control" style="width:200px; display:inline-block; margin-right:10px;" placeholder="RESET">
-        <button class="toggle-btn toggle-close" onclick="resetAllSystemData()">💥 ล้างข้อมูลทั้งหมด</button>
+      <!-- Tab 4: ตั้งค่าระบบ -->
+      <div id="tab-system" class="admin-tab-section" style="display:none;">
+        <div class="form-card">
+          <h4>สถานะระบบรับสมัคร</h4>
+          <p id="sys-status-text" style="margin:10px 0; font-weight:bold;"></p>
+          <button id="btn-sys-toggle" class="toggle-btn" onclick="toggleSystem()"></button>
+        </div>
+        <div class="form-card" style="border:1px solid #fecdd3; background:#fff1f2;">
+          <h4 style="color:#be123c;">⚠️ ล้างข้อมูลระบบ (Reset)</h4>
+          <p style="color:#9f1239; font-size:0.85rem; margin:6px 0;">พิมพ์คำว่า <b>RESET</b> เพื่อยืนยันการล้างข้อมูลนักเรียนทุกคน</p>
+          <input type="text" id="reset-confirm-text" class="form-control" style="width:200px; display:inline-block; margin-right:10px;" placeholder="RESET">
+          <button class="toggle-btn toggle-close" onclick="resetAllSystemData()">💥 ล้างข้อมูลทั้งหมด</button>
+        </div>
       </div>
     </div>
 
@@ -335,12 +412,13 @@
       updateRoomDropdownOptions();
       await fetchRealtimeCounts(); 
       
-      setInterval(fetchRealtimeCounts, 3000);
+      // บังคับ Auto Sync ทุกๆ 5 วินาที เพื่อให้ทุกเครื่องเปลี่ยนสถานะตรงกันสดๆ
+      setInterval(fetchRealtimeCounts, 5000);
     };
 
     async function fetchRealtimeCounts() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_rand=${Math.random()}`, { cache: "no-store" });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Date.now()}`);
         const result = await response.json();
         
         if (result.clubs && Array.isArray(result.clubs)) {
@@ -355,28 +433,17 @@
         if (result.status === "success" && Array.isArray(result.data)) {
           allRawStudentsData = result.data;
           clubCountsMap = {};
-          let registeredCount = 0;
-          
           result.data.forEach(st => {
             const cName = getClubDisplayName(st.club);
-            if (cName) {
-              clubCountsMap[cName] = (clubCountsMap[cName] || 0) + 1;
-              registeredCount++;
-            }
+            if (cName) clubCountsMap[cName] = (clubCountsMap[cName] || 0) + 1;
           });
-
-          // อัปเดตตัวเลขใน Stat Card 3 กล่อง
-          if(document.getElementById('stat-total-clubs')) document.getElementById('stat-total-clubs').innerText = clubsDb.length;
-          if(document.getElementById('stat-registered-students')) document.getElementById('stat-registered-students').innerText = registeredCount + " คน";
-          
-          let totalSeats = clubsDb.reduce((sum, c) => sum + parseInt(c.max || 0), 0);
-          if(document.getElementById('stat-total-seats')) document.getElementById('stat-total-seats').innerText = totalSeats + " ที่นั่ง";
         }
       } catch(e) {
         console.warn("Could not load realtime counts from Sheets API", e);
       } finally {
         renderClubs();
         renderAdminTable();
+        renderTeacherSummary();
         hideLoader();
       }
     }
@@ -384,26 +451,22 @@
     async function syncClubsToSheet() {
       try {
         const jsonStr = encodeURIComponent(JSON.stringify(clubsDb));
-        const img = new Image();
-        img.src = `${SCRIPT_URL}?action=saveClubs&clubs=${jsonStr}&_rand=${Math.random()}`;
+        const response = await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${jsonStr}&nocache=${Date.now()}`);
+        return await response.json();
       } catch(e) {
         console.error("Error saving clubs:", e);
       }
     }
 
-    // ฟังก์ชันยิงเปลี่ยนสถานะผ่าน Image Ping เพื่อทะลุการบล็อก CORS ของเบราว์เซอร์
-    function toggleSystem() {
-      showLoader("กำลังอัปเดตสถานะระบบ...", "โปรดรอสักครู่ ระบบกำลังบันทึกลง Google Sheet");
-      const targetState = !isSystemOpen;
-
-      const img = new Image();
-      img.src = `${SCRIPT_URL}?action=toggleSystem&isOpen=${targetState}&_rand=${Math.random()}`;
-
-      setTimeout(async () => {
-        await fetchRealtimeCounts();
-        hideLoader();
-        alert(`เปลี่ยนสถานะเป็น ${targetState ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'} เรียบร้อยแล้ว`);
-      }, 1500);
+    async function toggleSystem() {
+      showLoader("กำลังอัปเดตสถานะระบบ...", "โปรดรอสักครู่");
+      isSystemOpen = !isSystemOpen;
+      updateSystemUI();
+      renderClubs();
+      try {
+        await fetch(`${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&nocache=${Date.now()}`);
+      } catch(e) { console.error("Error toggling system:", e); } 
+      finally { hideLoader(); }
     }
 
     function updateRoomDropdownOptions(selectedRoomValue = "") {
@@ -437,6 +500,16 @@
       if(page === 'dashboard') { await fetchRealtimeCounts(); }
     }
 
+    function switchAdminTab(tabId, btnEl) {
+      document.querySelectorAll('.admin-tab-section').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).style.display = 'block';
+      btnEl.classList.add('active');
+      
+      if(tabId === 'teachers') renderTeacherSummary();
+      else if(tabId === 'reports') fetchAdminReportData();
+    }
+
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
@@ -459,7 +532,7 @@
       }
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&_rand=${Math.random()}`, { cache: "no-store" });
+        const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&nocache=${Date.now()}`);
         const result = await response.json();
 
         if (result.status === "success" && result.role === "student") {
@@ -535,15 +608,21 @@
 
       showLoader("กำลังบันทึกข้อมูล...", "โปรดอย่าปิดหน้าจอ ระบบกำลังบันทึกข้อมูลลง Google Sheets");
 
-      const img = new Image();
-      img.src = `${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&_rand=${Math.random()}`;
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}&nocache=${Date.now()}`);
+        const result = await response.json();
 
-      setTimeout(async () => {
-        currentUser.club = clubName;
-        await switchPage('myclub-view'); 
-        hideLoader();
-        alert(`🎉 ลงทะเบียนสำเร็จ! ระบบบันทึกข้อมูลแล้ว`);
-      }, 1500);
+        if(result.status === "success") {
+          currentUser.club = clubName;
+          await switchPage('myclub-view'); 
+          hideLoader();
+          alert(`🎉 ลงทะเบียนสำเร็จ! ระบบบันทึกข้อมูลแล้ว`);
+        } else {
+          hideLoader(); alert("บันทึกไม่สำเร็จ: " + result.message);
+        }
+      } catch (error) {
+        hideLoader(); alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง Google Sheet");
+      }
     }
 
     async function renderMyClubMembers() {
@@ -561,7 +640,7 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:15px;">กำลังโหลดรายชื่อเพื่อนร่วมชุมนุม...</td></tr>`;
       
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getStudents&_rand=${Math.random()}`, { cache: "no-store" });
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Date.now()}`);
         const result = await response.json();
         if (result.status === "success") {
           currentClubMembers = result.data.filter(st => getClubDisplayName(st.club) === studentClub);
@@ -595,6 +674,93 @@
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.setAttribute("download", `รายชื่อนักเรียน_${getClubDisplayName(currentUser.club)}.csv`);
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+
+    async function fetchAdminReportData() {
+      const tbody = document.getElementById('admin-report-table');
+      if(!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">กำลังโหลดรายชื่อนักเรียนทั้งหมด...</td></tr>';
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getStudents&nocache=${Date.now()}`);
+        const result = await response.json();
+        if(result.status === "success") {
+          allRawStudentsData = result.data || [];
+          populateReportFilters();
+          filterAdminReport();
+        }
+      } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">ไม่สามารถติดต่อ Google Sheets ได้</td></tr>';
+      }
+    }
+
+    function populateReportFilters() {
+      const clubSelect = document.getElementById('report-filter-club');
+      const classSelect = document.getElementById('report-filter-class');
+      if(clubSelect) {
+        clubSelect.innerHTML = '<option value="ALL">-- แสดงนักเรียนทุกชุมนุม --</option><option value="NONE">❌ ยังไม่ได้ลงทะเบียน</option>';
+        clubsDb.forEach(c => {
+          const fullName = `${c.icon} ${c.name}`;
+          clubSelect.innerHTML += `<option value="${fullName}">${fullName}</option>`;
+        });
+      }
+      if(classSelect) {
+        const classes = [...new Set(allRawStudentsData.map(s => s.className).filter(Boolean))].sort();
+        classSelect.innerHTML = '<option value="ALL">-- แสดงนักเรียนทุกห้องเรียน --</option>';
+        classes.forEach(cls => { classSelect.innerHTML += `<option value="${cls}">ห้อง / ชั้น ${cls}</option>`; });
+      }
+    }
+
+    let currentFilteredDataForExport = [];
+
+    function filterAdminReport() {
+      const selectedClass = document.getElementById('report-filter-class')?.value || "ALL";
+      const selectedClub = document.getElementById('report-filter-club')?.value || "ALL";
+      const searchText = document.getElementById('report-filter-search')?.value.toLowerCase().trim() || "";
+      const tbody = document.getElementById('admin-report-table');
+
+      currentFilteredDataForExport = allRawStudentsData.filter(st => {
+        const stClubName = getClubDisplayName(st.club);
+        let matchClass = (selectedClass === "ALL" || (st.className || "").toString().trim() === selectedClass.trim());
+        let matchClub = true;
+        if (selectedClub === "NONE") matchClub = (!stClubName || stClubName.trim() === "");
+        else if (selectedClub !== "ALL") matchClub = (stClubName === selectedClub);
+        const matchSearch = (!searchText || st.id.toString().toLowerCase().includes(searchText) || st.name.toLowerCase().includes(searchText));
+        return matchClass && matchClub && matchSearch;
+      });
+
+      if(document.getElementById('report-count-badge')) document.getElementById('report-count-badge').innerText = `พบข้อมูล: ${currentFilteredDataForExport.length} คน`;
+      if(!tbody) return;
+      if(currentFilteredDataForExport.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      currentFilteredDataForExport.slice(0, 150).forEach((st, idx) => {
+        const displayClub = getClubDisplayName(st.club);
+        tbody.innerHTML += `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>${st.id}</td>
+            <td style="font-weight:bold; color:#701a75;">${st.name}</td>
+            <td>${st.className}</td>
+            <td>${displayClub !== "" ? `<span style="color:#10b981; font-weight:bold;">${displayClub}</span>` : '<span style="color:#a21caf; font-style:italic;">❌ ยังไม่ได้ลงทะเบียน</span>'}</td>
+          </tr>`;
+      });
+    }
+
+    function exportAllReportToExcel() {
+      if (!currentFilteredDataForExport || currentFilteredDataForExport.length === 0) { alert("⚠️ ยังไม่มีข้อมูลสำหรับส่งออก"); return; }
+      let csvContent = "\uFEFFเลขที่,รหัสนักเรียน,ชื่อ-นามสกุล,ชั้นเรียน,ชุมนุมที่เลือก\n";
+      currentFilteredDataForExport.forEach((st, idx) => {
+        const clubName = getClubDisplayName(st.club) || 'ยังไม่ได้ลงทะเบียน';
+        csvContent += `${idx + 1},'${st.id},"${st.name}",${st.className},"${clubName}"\n`;
+      });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `รายงานลงทะเบียนชุมนุม.csv`);
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
@@ -722,7 +888,7 @@
         stText.innerHTML = "🟢 เปิดรับสมัครอยู่ (นักเรียนเลือกชุมนุมได้ปกติ)"; stText.style.color = "#10b981";
         btn.innerText = "🔒 ปิดระบบชั่วคราว"; btn.className = "toggle-btn toggle-close";
       } else {
-        stText.innerHTML = "🔴 ปิดระบบแล้ว (นักเรียนล็อกอินได้แต่ถูกล็อกปุ่มสมัคร)"; stText.style.color = "#be185d";
+        stText.innerHTML = "🔴 ปิดระบบแล้ว (ล็อกปุ่มสมัคร)"; stText.style.color = "#be185d";
         btn.innerText = "🔓 เปิดระบบรับสมัคร"; btn.className = "toggle-btn toggle-open";
       }
     }
@@ -751,11 +917,9 @@
 
       await syncClubsToSheet();
       clearForm();
-      setTimeout(async () => {
-        await fetchRealtimeCounts(); 
-        hideLoader();
-        alert('✅ บันทึกข้อมูลชุมนุมเรียบร้อยแล้ว');
-      }, 1500);
+      await fetchRealtimeCounts(); 
+      hideLoader();
+      alert('✅ บันทึกข้อมูลชุมนุมเรียบร้อยแล้ว');
     }
 
     function clearForm() {
@@ -792,11 +956,9 @@
         showLoader("กำลังลบ...", "โปรดรอสักครู่");
         clubsDb = clubsDb.filter(c => c.id != id);
         await syncClubsToSheet();
-        setTimeout(async () => {
-          await fetchRealtimeCounts(); 
-          hideLoader();
-          alert('✅ ลบชุมนุมเรียบร้อยแล้ว');
-        }, 1500);
+        await fetchRealtimeCounts(); 
+        hideLoader();
+        alert('✅ ลบชุมนุมเรียบร้อยแล้ว');
       }
     }
 
@@ -821,6 +983,26 @@
       });
     }
 
+    function renderTeacherSummary() {
+      const tbody = document.getElementById('teacher-summary-table');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(clubsDb.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray; padding:20px;">ยังไม่มีชุมนุมในระบบ</td></tr>';
+        return;
+      }
+      clubsDb.forEach((c, idx) => {
+        const roomInfo = c.targetRoom ? ` (เฉพาะห้อง ${c.targetRoom})` : '';
+        tbody.innerHTML += `
+          <tr>
+            <td>${idx + 1}</td>
+            <td style="font-weight:bold; color:#701a75;">👩‍🏫 ${c.teacher}</td>
+            <td>${c.icon} ${c.name}</td>
+            <td>${c.targetGrade || 'ทุกระดับชั้น'}${roomInfo}</td>
+          </tr>`;
+      });
+    }
+
     async function resetAllSystemData() {
       const confirmInput = document.getElementById('reset-confirm-text')?.value.trim();
       if (confirmInput !== "RESET") { alert("⚠️ กรุณาพิมพ์คำว่า RESET ให้ถูกต้อง"); return; }
@@ -828,16 +1010,18 @@
 
       showLoader("กำลังล้างข้อมูล...", "โปรดอย่าปิดหน้าจอ");
       try {
-        const img = new Image();
-        img.src = `${SCRIPT_URL}?action=reset&_rand=${Math.random()}`;
-        setTimeout(async () => {
+        const response = await fetch(`${SCRIPT_URL}?action=reset&nocache=${Date.now()}`);
+        const result = await response.json();
+        if (result.status === "success") {
           if(document.getElementById('reset-confirm-text')) document.getElementById('reset-confirm-text').value = "";
           isSystemOpen = false;
-          toggleSystem();
+          await toggleSystem();
           await logout(); 
           hideLoader();
           alert("✅ รีเซ็ตระบบสำเร็จแล้ว");
-        }, 1500);
+        } else {
+          hideLoader(); alert("❌ ข้อผิดพลาด: " + result.message);
+        }
       } catch (error) {
         hideLoader(); alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้");
       }
