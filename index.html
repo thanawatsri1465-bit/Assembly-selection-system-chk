@@ -374,7 +374,7 @@
   <script>
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
     // ⚠️ นำ URL จากการ Deploy Apps Script ล่าสุดมาวางตรงนี้
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_NEW_DEPLOY_ID_HERE/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztH6mULygrYaVY9JBMzBVTSRF9HuPw24vclRgTlr0VDHIbjrYTCYPmbILjty-b0Ub2SA/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
@@ -382,17 +382,8 @@
     let allRawStudentsData = [];
     let clubCountsMap = {};
 
-    const defaultClubs = [
-      { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
-      { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
-    ];
-
-    let savedClubs = JSON.parse(localStorage.getItem('clubsDb'));
-    let clubsDb = (savedClubs !== null && Array.isArray(savedClubs)) ? savedClubs : defaultClubs;
-
-    function saveClubsToStorage() {
-      localStorage.setItem('clubsDb', JSON.stringify(clubsDb));
-    }
+    // 🟢 แก้ไข: ใช้ตัวแปรอาร์เรย์ว่างเพื่อโหลดข้อมูลกลางจาก Google Sheets ร่วมกันทุกเครื่อง
+    let clubsDb = [];
 
     window.onload = () => { 
       document.getElementById('school-logo-top').src = LOGO_URL;
@@ -406,14 +397,14 @@
       renderTeacherSummary();
       updateDashboardStats();
 
-      // 🚀 1. เช็กสถานะการ เปิด/ปิด ระบบแบบด่วนทุกๆ 1.5 วินาที (ไม่หน่วงแน่นอน)
+      // 🚀 1. เช็กสถานะการ เปิด/ปิด ระบบแบบด่วนทุกๆ 1.5 วินาที
       setInterval(checkSystemStatusFast, 1500);
 
-      // 🚀 2. ดึงจำนวนคนที่สมัครแต่ละชุมนุมทุกๆ 5 วินาที
+      // 🚀 2. ดึงจำนวนคนที่สมัครและรายชื่อชุมนุมทุกๆ 5 วินาที
       setInterval(fetchRealtimeCounts, 5000);
     };
 
-    // ⚡ ฟังก์ชันเช็กเฉพาะสถานะ เปิด/ปิด ระบบ (ตอบกลับเร็วมาก)
+    // ⚡ ฟังก์ชันเช็กเฉพาะสถานะ เปิด/ปิด ระบบ
     async function checkSystemStatusFast() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getSystemStatus&_r=${Math.random()}`, {
@@ -425,7 +416,7 @@
           if (isSystemOpen !== result.isSystemOpen) {
             isSystemOpen = result.isSystemOpen;
             updateSystemUI();
-            renderClubs(); // วาดหน้าปุ่มใหม่ทันที
+            renderClubs();
           }
         }
       } catch(e) {
@@ -445,6 +436,11 @@
             isSystemOpen = result.isSystemOpen;
             updateSystemUI();
           }
+        }
+
+        // 🟢 ดึงข้อมูลชุมนุมจาก Google Sheets ให้ใช้ข้อมูลชุดเดียวกันทุกเครื่อง
+        if (result.clubs && Array.isArray(result.clubs)) {
+          clubsDb = result.clubs;
         }
 
         if (result.status === "success" && Array.isArray(result.data)) {
@@ -987,7 +983,8 @@
       }
     }
 
-    function saveClub() {
+    // 🟢 แก้ไข: ส่งข้อมูลชุมนุมไปบันทึกที่ Google Apps Script
+    async function saveClub() {
       const idInput = document.getElementById('edit-id').value;
       const icon = document.getElementById('c-icon').value || "🔰"; 
       const name = document.getElementById('c-name').value;
@@ -999,21 +996,21 @@
 
       if(!name || !teacher || !max) { alert('⚠️ กรุณากรอกข้อมูลหลักให้ครบถ้วนครับ'); return; }
 
-      if(idInput) {
-        const index = clubsDb.findIndex(c => c.id == idInput);
-        if(index > -1) clubsDb[index] = { id: parseInt(idInput), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
-      } else {
-        const newId = clubsDb.length > 0 ? Math.max(...clubsDb.map(c => c.id)) + 1 : 1;
-        clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
-      }
+      const clubData = { id: idInput || Date.now(), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
 
-      saveClubsToStorage();
-      clearForm();
-      renderAdminTable();
-      renderTeacherSummary();
-      renderClubs(); 
-      updateDashboardStats();
-      alert('✅ บันทึกข้อมูลชุมนุมเรียบร้อยแล้ว');
+      try {
+        await fetch(`${SCRIPT_URL}?action=saveClubData`, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(clubData)
+        });
+        alert('✅ บันทึกข้อมูลชุมนุมไปยังฐานข้อมูลเรียบร้อยแล้ว');
+        clearForm();
+        fetchRealtimeCounts();
+      } catch(e) {
+        alert('❌ ไม่สามารถบันทึกข้อมูลไปยัง Google Sheets ได้');
+      }
     }
 
     function clearForm() {
@@ -1045,14 +1042,19 @@
       }
     }
 
-    function deleteClub(id) {
-      if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
-        clubsDb = clubsDb.filter(c => c.id != id);
-        saveClubsToStorage();
-        renderAdminTable();
-        renderTeacherSummary();
-        renderClubs(); 
-        updateDashboardStats();
+    // 🟢 แก้ไข: ส่งคำสั่งลบชุมนุมไปยัง Google Apps Script
+    async function deleteClub(id) {
+      if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากฐานข้อมูลใช่หรือไม่?')) {
+        try {
+          await fetch(`${SCRIPT_URL}?action=deleteClubData&id=${id}`, {
+            method: 'POST',
+            mode: 'no-cors'
+          });
+          alert('🗑️ ลบข้อมูลชุมนุมเรียบร้อยแล้ว');
+          fetchRealtimeCounts();
+        } catch(e) {
+          alert('❌ ไม่สามารถส่งคำสั่งลบไปยัง Google Sheets ได้');
+        }
       }
     }
 
