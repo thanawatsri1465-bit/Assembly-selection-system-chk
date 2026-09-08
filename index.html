@@ -30,6 +30,38 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
+    /* 🔄 Full-screen Loading Overlay (หน้าจอหมุนโหลดบังมิด 100%) */
+    #full-page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #ffffff;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .refresh-spinner {
+      width: 65px;
+      height: 65px;
+      border: 6px solid #f3e8ff;
+      border-top: 6px solid #86198f;
+      border-right: 6px solid #ec4899;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* Header & Layout */
     .top-header { background: white; border-bottom: 1px solid var(--border-purple); padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .top-header img { height: 40px; width: auto; object-fit: contain; }
@@ -139,6 +171,13 @@
 </head>
 <body>
 
+  <!-- 🔄 หน้าจอหมุนโหลดดิ้งบังมิดทั้งหน้าก่อนเข้าเว็บ -->
+  <div id="full-page-loader">
+    <div class="refresh-spinner"></div>
+    <h3 style="font-family:'Kanit'; color:#86198f; margin-bottom:6px;">กำลังโหลดข้อมูลชุมนุมล่าสุด...</h3>
+    <p style="color:gray; font-size:13px;">โปรดรอสักครู่ ระบบกำลังเชื่อมต่อฐานข้อมูล Google Sheets</p>
+  </div>
+
   <div class="top-header">
     <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-top" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
     <h2>ระบบลงทะเบียนกิจกรรมชุมนุม - โรงเรียนโชคชัยสามัคคี</h2>
@@ -177,12 +216,7 @@
       </div>
 
       <h3 style="margin-bottom: 20px; font-family:'Kanit'; color:#701a75;">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</h3>
-      <div class="clubs-grid" id="clubs-container">
-        <!-- แสดงโหลดดิ้งชั่วคราวขณะดึงข้อมูลจาก Google Sheets -->
-        <div style="grid-column: 1/-1; text-align:center; padding:50px; color:#a21caf; font-weight:bold;">
-          ⏳ กำลังดึงข้อมูลชุมนุมล่าสุดจากระบบ...
-        </div>
-      </div>
+      <div class="clubs-grid" id="clubs-container"></div>
     </div>
   </div>
 
@@ -428,7 +462,7 @@
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
-    let clubsDb = []; // ลบข้อมูลตัวอย่างเก่าออก ตั้งค่าเริ่มต้นเป็นอาร์เรย์ว่าง
+    let clubsDb = [];
 
     window.onload = async () => { 
       localStorage.removeItem('clubsDb');
@@ -451,8 +485,6 @@
         
         if (result.clubs && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
-        } else {
-          clubsDb = [];
         }
 
         if (typeof result.isSystemOpen !== "undefined") {
@@ -477,6 +509,14 @@
         renderAdminTable();
         renderTeacherSummary();
         updateDashboardStats();
+
+        // 🟢 เมื่อโหลดข้อมูลเสร็จสมบูรณ์ ให้จางหายและปิดหน้าจอ Overlay ทันที!
+        const loader = document.getElementById('full-page-loader');
+        if(loader) {
+          loader.style.opacity = '0';
+          loader.style.visibility = 'hidden';
+          setTimeout(() => { loader.style.display = 'none'; }, 400);
+        }
       }
     }
 
