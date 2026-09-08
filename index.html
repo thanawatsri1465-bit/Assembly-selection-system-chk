@@ -7,6 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
+    /* ซ่อนแท็บ Feedback / Drawer มุมขวาล่าง */
+iframe#netlify-identity-widget,
+[class*="feedback"],
+[class*="badge"],
+[id*="badge"],
+[class*="drawer"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
     :root {
       --font-main: 'Sarabun', sans-serif;
       --bg-light: #fdf4ff;
