@@ -528,15 +528,14 @@
       renderTeacherSummary();
       updateDashboardStats();
     };
-
-    // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets
+        // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
         const result = await response.json();
         
-        // อัปเดตรายการชุมนุมจากฐานข้อมูลกลาง Google Sheets
-        if (result.clubs && Array.isArray(result.clubs)) {
+        // หาก Google Sheets ส่งข้อมูลชุมนุมมา (ใช้ข้อมูลจาก Google Sheets เป็นหลัก 100%)
+        if (result.clubs !== null && typeof result.clubs !== "undefined" && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
           saveClubsToStorage();
         }
@@ -566,6 +565,9 @@
         updateDashboardStats();
       }
     }
+
+
+    /
 
     // ✅ ส่งโครงสร้างชุมนุมไปบันทึกบน Google Sheets
     async function syncClubsToSheet() {
