@@ -30,38 +30,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
-    /* 🔄 Full-screen Loading Overlay (หมุนๆ บังทับมิด 100% ทุกจังหวะ) */
-    #full-page-loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: #ffffff;
-      z-index: 999999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    .refresh-spinner {
-      width: 65px;
-      height: 65px;
-      border: 6px solid #f3e8ff;
-      border-top: 6px solid #86198f;
-      border-right: 6px solid #ec4899;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     /* Header & Layout */
     .top-header { background: white; border-bottom: 1px solid var(--border-purple); padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .top-header img { height: 40px; width: auto; object-fit: contain; }
@@ -171,13 +139,6 @@
 </head>
 <body>
 
-  <!-- 🔄 หน้าจอหมุนโหลดดิ้งบังมิดทั้งหน้าขณะกำลังโหลดหรือเปลี่ยนสถานะ -->
-  <div id="full-page-loader">
-    <div class="refresh-spinner"></div>
-    <h3 id="loader-title" style="font-family:'Kanit'; color:#86198f; margin-bottom:6px;">กำลังเชื่อมต่อระบบ...</h3>
-    <p id="loader-subtitle" style="color:gray; font-size:13px;">โปรดรอสักครู่ ระบบกำลังประมวลผลข้อมูล</p>
-  </div>
-
   <div class="top-header">
     <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-top" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
     <h2>ระบบลงทะเบียนกิจกรรมชุมนุม - โรงเรียนโชคชัยสามัคคี</h2>
@@ -216,7 +177,12 @@
       </div>
 
       <h3 style="margin-bottom: 20px; font-family:'Kanit'; color:#701a75;">📚 รายชื่อกิจกรรมชุมนุมทั้งหมด</h3>
-      <div class="clubs-grid" id="clubs-container"></div>
+      <div class="clubs-grid" id="clubs-container">
+        <!-- แสดงโหลดดิ้งชั่วคราวขณะดึงข้อมูลจาก Google Sheets -->
+        <div style="grid-column: 1/-1; text-align:center; padding:50px; color:#a21caf; font-weight:bold;">
+          ⏳ กำลังดึงข้อมูลชุมนุมล่าสุดจากระบบ...
+        </div>
+      </div>
     </div>
   </div>
 
@@ -462,31 +428,9 @@
     let currentClubMembers = [];
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
-    let clubsDb = [];
-
-    // ฟังก์ชันเปิด/ปิด หน้าจอหมุนโหลดดิ้งบังมิดทั้งหน้า
-    function showLoader(title = "กำลังโหลดข้อมูลชุมนุมล่าสุด...", subtitle = "โปรดรอสักครู่ ระบบกำลังเชื่อมต่อ Google Sheets") {
-      const loader = document.getElementById('full-page-loader');
-      document.getElementById('loader-title').innerText = title;
-      document.getElementById('loader-subtitle').innerText = subtitle;
-      if (loader) {
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
-        loader.style.visibility = 'visible';
-      }
-    }
-
-    function hideLoader() {
-      const loader = document.getElementById('full-page-loader');
-      if (loader) {
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
-      }
-    }
+    let clubsDb = []; // ลบข้อมูลตัวอย่างเก่าออก ตั้งค่าเริ่มต้นเป็นอาร์เรย์ว่าง
 
     window.onload = async () => { 
-      showLoader("กำลังเชื่อมต่อระบบ...", "กำลังดึงข้อมูลชุมนุมล่าสุดจาก Google Sheets");
       localStorage.removeItem('clubsDb');
 
       document.getElementById('school-logo-top').src = LOGO_URL;
@@ -495,6 +439,7 @@
       updateSystemUI(); 
       updateRoomDropdownOptions();
       
+      // ดึงข้อมูลสดจาก Google Sheet ทันทีที่เปิดหน้าเว็บ
       await fetchRealtimeCounts(); 
     };
 
@@ -506,6 +451,8 @@
         
         if (result.clubs && Array.isArray(result.clubs)) {
           clubsDb = result.clubs;
+        } else {
+          clubsDb = [];
         }
 
         if (typeof result.isSystemOpen !== "undefined") {
@@ -530,11 +477,10 @@
         renderAdminTable();
         renderTeacherSummary();
         updateDashboardStats();
-        hideLoader(); // ซ่อนหมุนๆ เมื่อประมวลผลเสร็จแล้ว
       }
     }
 
-    // 2. บันทึกข้อมูลชุมนุมลง Google Sheets
+    // 2. บันทึกข้อมูลชุมนุมลง Google Sheets (ชีต Config ช่อง A1)
     async function syncClubsToSheet() {
       try {
         const params = new URLSearchParams();
@@ -554,7 +500,6 @@
 
     // 3. สลับสถานะระบบเปิด/ปิด
     async function toggleSystem() {
-      showLoader("กำลังอัปเดตสถานะระบบ...", "โปรดรอสักครู่");
       isSystemOpen = !isSystemOpen;
       updateSystemUI();
       renderClubs();
@@ -571,8 +516,6 @@
         });
       } catch(e) {
         console.error("Error toggling system:", e);
-      } finally {
-        hideLoader();
       }
     }
 
@@ -632,6 +575,7 @@
     async function login(e) {
       e.preventDefault();
       const studentId = document.getElementById('log-id').value.trim();
+      const submitBtn = document.getElementById('btn-login-submit');
 
       if(studentId.toLowerCase() === 'admin') {
         currentUser = 'admin';
@@ -641,7 +585,8 @@
         return;
       }
 
-      showLoader("กำลังตรวจสอบรหัสนักเรียน...", "โปรดรอสักครู่ ระบบกำลังค้นหาข้อมูลใน Google Sheets");
+      submitBtn.disabled = true;
+      submitBtn.innerText = "กำลังตรวจสอบข้อมูล...";
 
       try {
         const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&t=${Date.now()}`);
@@ -665,19 +610,15 @@
       } catch (error) {
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อ Google ชีต");
       } finally {
-        hideLoader();
+        submitBtn.disabled = false;
+        submitBtn.innerText = "เข้าสู่ระบบ →";
       }
     }
 
-    // 🌀 ปรับปรุงฟังก์ชันออกจากระบบให้ขึ้นหมุนๆ
     function logout() {
-      showLoader("กำลังออกจากระบบ...", "ระบบกำลังรีเซ็ตสถานะหน้าจอ");
-      setTimeout(() => {
-        currentUser = null;
-        document.getElementById('log-id').value = '';
-        switchPage('dashboard');
-        hideLoader();
-      }, 500);
+      currentUser = null;
+      document.getElementById('log-id').value = '';
+      switchPage('dashboard');
     }
 
     function checkGradeAndRoomPermission(targetGradeRule, targetRoomRule, studentClass) {
@@ -729,7 +670,8 @@
 
       if(!confirm(`คุณต้องการยืนยันลงทะเบียนเข้า "${clubName}" ใช่หรือไม่?`)) return;
 
-      showLoader("กำลังบันทึกข้อมูลการเลือกชุมนุม...", "โปรดอย่าปิดหน้าจอ ระบบกำลังบันทึกข้อมูลลง Google Sheets");
+      btnEl.disabled = true;
+      btnEl.innerText = "กำลังบันทึก...";
 
       try {
         const response = await fetch(`${SCRIPT_URL}?action=join&studentId=${encodeURIComponent(currentUser.id)}&club=${encodeURIComponent(clubName)}`);
@@ -745,7 +687,8 @@
       } catch (error) {
         alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง Google Sheet");
       } finally {
-        hideLoader();
+        btnEl.disabled = false;
+        btnEl.innerText = "เลือกชุมนุมนี้";
       }
     }
 
@@ -1088,8 +1031,6 @@
         return; 
       }
 
-      showLoader("กำลังบันทึกข้อมูลชุมนุม...", "โปรดรอสักครู่ ระบบกำลังส่งข้อมูลไปยัง Google Sheets");
-
       if(idInput) {
         const index = clubsDb.findIndex(c => c.id == idInput);
         if(index > -1) clubsDb[index] = { id: parseInt(idInput), icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc };
@@ -1098,11 +1039,13 @@
         clubsDb.push({ id: newId, icon, name, teacher, targetGrade, targetRoom, max: parseInt(max), desc });
       }
 
+      // ส่งข้อมูลไปเซฟจริงลงชีต Config
       await syncClubsToSheet();
       clearForm();
+      
+      // ดึงข้อมูลสดกลับมาอัปเดตหน้าจอทันที
       await fetchRealtimeCounts(); 
       alert('✅ บันทึกข้อมูลชุมนุมลง Google Sheets ถาวรเรียบร้อยแล้ว');
-      hideLoader();
     }
 
     function clearForm() {
@@ -1137,12 +1080,10 @@
     // 7. ลบชุมนุมออกจากระบบ
     async function deleteClub(id) {
       if(confirm('🗑️ คุณต้องการลบชุมนุมนี้ออกจากระบบใช่หรือไม่?')) {
-        showLoader("กำลังลบชุมนุม...", "โปรดรอสักครู่");
         clubsDb = clubsDb.filter(c => c.id != id);
         await syncClubsToSheet();
         await fetchRealtimeCounts(); 
         alert('✅ ลบชุมนุมเรียบร้อยแล้ว');
-        hideLoader();
       }
     }
 
@@ -1191,6 +1132,7 @@
 
     async function resetAllSystemData() {
       const confirmInput = document.getElementById('reset-confirm-text').value.trim();
+      const btnReset = document.getElementById('btn-reset-all');
 
       if (confirmInput !== "RESET") {
         alert("⚠️ ยืนยันไม่สำเร็จ! กรุณาพิมพ์คำว่า RESET (ตัวพิมพ์ใหญ่ทั้งหมด) ให้ถูกต้องครับ");
@@ -1201,7 +1143,8 @@
         return;
       }
 
-      showLoader("กำลังล้างข้อมูลใน Google Sheets...", "โปรดอย่าปิดหน้าจอ");
+      btnReset.disabled = true;
+      btnReset.innerText = "กำลังสั่งล้างฐานข้อมูลระบบ...";
 
       try {
         const response = await fetch(`${SCRIPT_URL}?action=reset`);
@@ -1219,7 +1162,8 @@
       } catch (error) {
         alert("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้ กรุณาเช็คการ Deploy Apps Script");
       } finally {
-        hideLoader();
+        btnReset.disabled = false;
+        btnReset.innerText = "🚨 ยืนยันล้างข้อมูลและรีเซ็ตระบบ 🚨";
       }
     }
   </script>
