@@ -7,16 +7,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
-    /* ซ่อนแท็บ Feedback / Drawer มุมขวาล่าง */
-iframe#netlify-identity-widget,
-[class*="feedback"],
-[class*="badge"],
-[id*="badge"],
-[class*="drawer"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
+    /* 🚫 ซ่อนป้าย และแท็บ Feedback / Drawer มุมขวาล่างทุกรูปแบบ */
+    #netlify-badge, 
+    [data-netlify-badge],
+    [data-netlify-deploy-id],
+    .netlify-badge,
+    iframe#netlify-identity-widget,
+    iframe[src*="netlify"],
+    div[class*="netlify"],
+    [class*="feedback"],
+    [class*="badge"],
+    [id*="badge"],
+    [class*="drawer"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
 
     :root {
       --font-main: 'Sarabun', sans-serif;
@@ -28,19 +35,6 @@ iframe#netlify-identity-widget,
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
-
-    /* 🚫 ซ่อน Netlify Badge ทุกรูปแบบ */
-    #netlify-badge, 
-    [data-netlify-badge],
-    [data-netlify-deploy-id],
-    .netlify-badge,
-    iframe[src*="netlify"],
-    div[class*="netlify"] {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
 
     .top-header {
       background: white;
@@ -514,7 +508,7 @@ iframe#netlify-identity-widget,
     let allRawStudentsData = [];
     let clubCountsMap = {}; 
 
-    // 💾 บันทึกและดึงข้อมูลชุมนุมจาก localStorage ป้องกันข้อมูลหายเวลารีเฟรช
+    // 💾 บันทึกและดึงข้อมูลชุมนุมจาก localStorage
     const defaultClubs = [
       { id: 1, icon: "💻", name: "ชุมนุมคอมพิวเตอร์", teacher: "นางสาวสุธิดา แสงปราบ", targetGrade: "ม.6", targetRoom: "6/9", max: 30, desc: "เรียนเขียนโปรแกรมและวิทยาการคำนวณ" },
       { id: 2, icon: "⚽", name: "ชุมนุมฟุตบอล", teacher: "นายสมชาย ใจดี", targetGrade: "ทุกระดับชั้น (ม.1 - ม.6)", targetRoom: "", max: 40, desc: "ฝึกทักษะการเล่นฟุตบอลและการทำงานเป็นทีม" }
@@ -544,6 +538,13 @@ iframe#netlify-identity-widget,
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
         const result = await response.json();
+        
+        // ถ้าเซิร์ฟเวอร์ส่งชุดชุมนุมมาให้ ให้ใช้จากเซิร์ฟเวอร์
+        if (result.clubs && Array.isArray(result.clubs)) {
+          clubsDb = result.clubs;
+          saveClubsToStorage();
+        }
+
         if (result.status === "success" && Array.isArray(result.data)) {
           allRawStudentsData = result.data;
           clubCountsMap = {};
@@ -606,7 +607,7 @@ iframe#netlify-identity-widget,
       }
     }
 
-    // ✅ แก้ไขฟังก์ชันนี้: เช็กจากชื่อชุมนุมตรงๆ ป้องกันไม่ให้เลขที่นักเรียนไปตรงกับ ID ชุมนุม
+    // ✅ ฟังก์ชันเช็กจากชื่อชุมนุมตรงๆ ป้องกันไม่ให้เลขที่นักเรียนไปตรงกับ ID ชุมนุม
     function getClubDisplayName(clubVal) {
       if(!clubVal) return "";
       const valStr = clubVal.toString().trim();
