@@ -496,7 +496,7 @@
     // 🖼️ URL รูปภาพโลโก้โรงเรียน
     const LOGO_URL = "https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg";
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgUW1LO2rOYseKdwxZuWx8IiENo8sozYEQ1TCFzddSW95NR_P8CVRCSuDnjHlHBTf03w/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgUW1LO2rOYseKdwxZuWx8liENo8sozYEQ1TCFzddSW95NR_P8CVRCSuDnjHIHlOaB_g/exec"; 
 
     let isSystemOpen = true;
     let currentUser = null;
@@ -528,7 +528,8 @@
       renderTeacherSummary();
       updateDashboardStats();
     };
-        // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets
+
+    // ✅ ดึงข้อมูลสด ชุมนุม + สถานะระบบ + จำนวนผู้สมัคร จาก Google Sheets
     async function fetchRealtimeCounts() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getStudents`);
@@ -565,9 +566,6 @@
         updateDashboardStats();
       }
     }
-
-
-    /
 
     // ✅ ส่งโครงสร้างชุมนุมไปบันทึกบน Google Sheets
     async function syncClubsToSheet() {
