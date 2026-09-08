@@ -425,7 +425,6 @@
         const response = await fetch(`${SCRIPT_URL}?action=getStudents&t=${Date.now()}`);
         const result = await response.json();
         
-        // ดึงข้อมูลชุมนุมจริงจาก Google Sheets
         if (result.clubs && Array.isArray(result.clubs) && result.clubs.length > 0) {
           clubsDb = result.clubs;
         }
@@ -453,19 +452,14 @@
       }
     }
 
+    // ⚡ ส่งข้อมูลด้วย GET Request แก้ปัญหา Browser บล็อกบันทึกข้อมูล
     async function syncClubsToSheet() {
       try {
-        const params = new URLSearchParams();
-        params.append('action', 'saveClubs');
-        params.append('clubs', JSON.stringify(clubsDb));
-
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString()
-        });
+        const response = await fetch(`${SCRIPT_URL}?action=saveClubs&clubs=${encodeURIComponent(JSON.stringify(clubsDb))}&t=${Date.now()}`);
         return await response.json();
-      } catch(e) { console.error("Error saving clubs:", e); }
+      } catch(e) {
+        console.error("Error saving clubs:", e);
+      }
     }
 
     async function toggleSystem() {
@@ -474,14 +468,7 @@
       updateSystemUI();
       renderClubs();
       try {
-        const params = new URLSearchParams();
-        params.append('action', 'toggleSystem');
-        params.append('isOpen', isSystemOpen);
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString()
-        });
+        await fetch(`${SCRIPT_URL}?action=toggleSystem&isOpen=${isSystemOpen}&t=${Date.now()}`);
       } catch(e) { console.error("Error toggling system:", e); } 
       finally { hideLoader(); }
     }
