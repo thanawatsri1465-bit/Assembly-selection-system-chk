@@ -635,10 +635,15 @@
         }
       } catch (error) {
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อ Google ชีต");
-      } finally {
+            } finally {
         submitBtn.disabled = false;
-        hideLoadingScreen(); // 🟢 ปิดการหมุนโหลดเมื่อสลับหน้าเสร็จถาวรแล้ว
+        
+        // ✏️ ใส่ชุดนี้แทนที่บรรทัดเดิม
+        setTimeout(() => {
+          hideLoadingScreen();
+        }, 16000);
       }
+
     }
 
     // 🚪 ฟังก์ชันออกจากระบบ (สลับหน้าเสร็จก่อนจึงปิดหมุน)
