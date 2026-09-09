@@ -23,6 +23,46 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-main); background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
 
+    /* 🔄 CSS หน้าหมุนเตรียมข้อมูล (Loading Overlay) */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .spinner-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      animation: spin 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-family: 'Kanit', sans-serif;
+      font-size: 18px;
+      color: var(--primary-purple);
+      font-weight: 500;
+    }
+
     .top-header { background: white; border-bottom: 1px solid #f5d0fe; padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .top-header img { height: 40px; width: auto; object-fit: contain; }
     .top-header h2 { font-family: 'Kanit', sans-serif; color: var(--primary-purple); font-size: 18px; }
@@ -115,6 +155,15 @@
   </style>
 </head>
 <body>
+
+  <!-- 🔄 หน้าหมุนเตรียมข้อมูล (Loading Screen) -->
+  <div id="loading-screen">
+    <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="#86198f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.5 2v6h-6M2.5 22v-6h6"></path>
+      <path d="M2 11.5a10 10 0 0 1 18.8-4.3L21.5 8M2.5 16l1.2 1.8a10 10 0 0 0 18.8-4.3"></path>
+    </svg>
+    <div class="loading-text">กำลังจัดเตรียมข้อมูลระบบ...</div>
+  </div>
 
   <div class="top-header">
     <img src="https://i.ibb.co/9mpysqrL/311727621-590247349560370-9017435611770902773-n.jpg" id="school-logo-top" alt="โลโก้โรงเรียนโชคชัยสามัคคี">
@@ -389,7 +438,7 @@
 
     let clubsDb = defaultClubs;
 
-    window.onload = () => { 
+    window.onload = async () => { 
       // 🧹 เคลียร์แคช LocalStorage ทิ้งเมื่อเปิดเว็บ เพื่อป้องกันการค้างค่าเก่า
       localStorage.removeItem('clubsDb');
 
@@ -399,11 +448,24 @@
       updateSystemUI(); 
       updateRoomDropdownOptions();
       renderClubs(); 
-      fetchRealtimeCounts(); 
+      
+      // ดึงข้อมูลสดจาก Google Sheets พร้อมการแสดงหน้าโหลดหมุน
+      await fetchRealtimeCounts(); 
+
       renderAdminTable(); 
       renderTeacherSummary();
       updateDashboardStats();
+
+      // 🔄 ซ่อนหน้าหมุนเตรียมข้อมูลเมื่อเตรียมข้อมูลเสร็จสิ้น
+      hideLoadingScreen();
     };
+
+    function hideLoadingScreen() {
+      const loader = document.getElementById('loading-screen');
+      if (loader) {
+        loader.classList.add('hidden');
+      }
+    }
 
     // ✅ ดึงข้อมูลสดจาก Google Sheet ถาวร
     async function fetchRealtimeCounts() {
