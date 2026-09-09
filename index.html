@@ -36,7 +36,7 @@
       align-items: center;
       justify-content: center;
       z-index: 99999;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
 
     #loading-screen.hidden {
@@ -162,7 +162,7 @@
       <path d="M21.5 2v6h-6M2.5 22v-6h6"></path>
       <path d="M2 11.5a10 10 0 0 1 18.8-4.3L21.5 8M2.5 16l1.2 1.8a10 10 0 0 0 18.8-4.3"></path>
     </svg>
-    <div class="loading-text">กำลังจัดเตรียมข้อมูลระบบ...</div>
+    <div class="loading-text" id="loading-screen-text">กำลังจัดเตรียมข้อมูลระบบ...</div>
   </div>
 
   <div class="top-header">
@@ -439,7 +439,6 @@
     let clubsDb = defaultClubs;
 
     window.onload = async () => { 
-      // 🧹 เคลียร์แคช LocalStorage ทิ้งเมื่อเปิดเว็บ เพื่อป้องกันการค้างค่าเก่า
       localStorage.removeItem('clubsDb');
 
       document.getElementById('school-logo-top').src = LOGO_URL;
@@ -449,17 +448,24 @@
       updateRoomDropdownOptions();
       renderClubs(); 
       
-      // ดึงข้อมูลสดจาก Google Sheets พร้อมการแสดงหน้าโหลดหมุน
       await fetchRealtimeCounts(); 
 
       renderAdminTable(); 
       renderTeacherSummary();
       updateDashboardStats();
 
-      // 🔄 ซ่อนหน้าหมุนเตรียมข้อมูลเมื่อเตรียมข้อมูลเสร็จสิ้น
       hideLoadingScreen();
     };
 
+    // 🔄 แสดงหน้าหมุนโหลด
+    function showLoadingScreen(message = "กำลังจัดเตรียมข้อมูลระบบ...") {
+      const loader = document.getElementById('loading-screen');
+      const textEl = document.getElementById('loading-screen-text');
+      if (textEl) textEl.innerText = message;
+      if (loader) loader.classList.remove('hidden');
+    }
+
+    // 🔄 ซ่อนหน้าหมุนโหลด
     function hideLoadingScreen() {
       const loader = document.getElementById('loading-screen');
       if (loader) {
@@ -591,21 +597,23 @@
       return valStr;
     }
 
+    // 🔑 ฟังก์ชันเข้าสู่ระบบ (หมุนจนกว่าจะดึงข้อมูลและสลับหน้าสำเร็จ)
     async function login(e) {
       e.preventDefault();
       const studentId = document.getElementById('log-id').value.trim();
       const submitBtn = document.getElementById('btn-login-submit');
 
-      if(studentId.toLowerCase() === 'admin') {
+      showLoadingScreen("กำลังตรวจสอบข้อมูลและเข้าสู่ระบบ...");
+
+      if (studentId.toLowerCase() === 'admin') {
         currentUser = 'admin';
-        alert('เข้าสู่ระบบแอดมินเรียบร้อย');
         switchPage('admin');
         updateDashboardStats();
+        hideLoadingScreen();
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerText = "กำลังตรวจสอบข้อมูล...";
 
       try {
         const response = await fetch(`${SCRIPT_URL}?action=login&studentId=${encodeURIComponent(studentId)}&t=${Date.now()}`);
@@ -613,16 +621,14 @@
 
         if (result.status === "success" && result.role === "student") {
           currentUser = result.data;
-          alert(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับคุณ ${currentUser.name}`);
-          
           let studentClub = getClubDisplayName(currentUser.club);
 
-          if(studentClub !== "") {
+          if (studentClub !== "") {
             currentUser.club = studentClub; 
-            switchPage('myclub-view');
+            switchPage('myclub-view'); // 🟢 สลับหน้าก่อน
           } else {
             currentUser.club = ""; 
-            switchPage('dashboard');
+            switchPage('dashboard'); // 🟢 สลับหน้าก่อน
           }
         } else {
           alert(result.message || "ไม่พบรหัสผู้ใช้งานนี้ในระบบ");
@@ -631,14 +637,20 @@
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อ Google ชีต");
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerText = "เข้าสู่ระบบ →";
+        hideLoadingScreen(); // 🟢 ปิดการหมุนโหลดเมื่อสลับหน้าเสร็จถาวรแล้ว
       }
     }
 
+    // 🚪 ฟังก์ชันออกจากระบบ (สลับหน้าเสร็จก่อนจึงปิดหมุน)
     function logout() {
-      currentUser = null;
-      document.getElementById('log-id').value = '';
-      switchPage('dashboard');
+      showLoadingScreen("กำลังออกจากระบบ...");
+      
+      setTimeout(() => {
+        currentUser = null;
+        document.getElementById('log-id').value = '';
+        switchPage('dashboard');
+        hideLoadingScreen();
+      }, 500);
     }
 
     function checkGradeAndRoomPermission(targetGradeRule, targetRoomRule, studentClass) {
